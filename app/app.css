@@ -7,9 +7,16 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-white dark:bg-black;
+
+  nav a {
+    @apply  inline-block tracking-wide overflow-hidden;
+  }
+
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
 }
+
+  
