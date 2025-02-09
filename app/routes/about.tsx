@@ -1,9 +1,11 @@
-import Banner from "~/components/Banner";
+import Banner from '~/components/Banner';
+import { NavLink } from 'react-router';
 
 export default function About() {
-  return (
+	return (
 		<div>
-			<Banner title="About Page" />
+			<NavLink to='/'>Home</NavLink>
+			<Banner title='About Page' />
 		</div>
 	);
 }

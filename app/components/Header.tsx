@@ -8,9 +8,8 @@ export default function Header() {
 				<ul className='grid grid-cols-[80px_80px_80px] items-center justify-start w-fit '>
 					<NavLink
 						className={({ isActive }: { isActive: boolean }) => {
-							return `${
-								isActive ? 'bg-orange-400' : ''
-							} p-2 no-underline text-slate-50 hover:text-white hover:font-bold  text-center`;
+							return `${isActive ? 'bg-orange-400' : ''
+								} p-2 no-underline text-slate-50 hover:text-white hover:font-bold  text-center`;
 						}}
 						to='/'
 					>

@@ -1,6 +1,15 @@
 import { Form } from "react-router";
+import { getAllTodos, type TodoRecord } from "~/db";
+import type { Route } from "../+types/root";
 
-export default function Sidebar() {
+export async function loader({ }: Route.LoaderArgs) {
+  const todos = await getAllTodos();
+  return { todos };
+}
+
+export default function Sidebar({ loaderData }: { loaderData:Route.ComponentProps }) {
+  const data = loaderData;
+  console.log(data)
   return (
 		<div className='px-4 sm:px-0 pt-8 md:row-[1]'>
       <Form className='flex flex-row items-center relative'
@@ -29,7 +38,10 @@ export default function Sidebar() {
 					aria-label='Search todos'
 					className='border-none rounded-full px-1 py-2 outline-1 pl-12'
 				/>
-			</Form>
+      </Form>
+      <div className='todos pt-8'>
+        
+      </div>
 		</div>
 	);
 }
