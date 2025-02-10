@@ -1,5 +1,4 @@
 import type React from "react";
-import Sidebar from "~/routes/sidebar";
 
 
 export default function Dashboard({ children }: { children: React.ReactNode }) {

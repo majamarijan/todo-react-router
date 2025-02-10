@@ -1,4 +1,3 @@
-import { create } from 'domain';
 
 export type Todo = {
 	todo: string;

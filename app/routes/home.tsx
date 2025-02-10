@@ -1,10 +1,8 @@
-import Content from '~/components/Content';
+import { Form, useNavigation } from 'react-router';
 import type { Route } from './+types/home';
-import { Form, NavLink } from 'react-router';
-
 import { getAllTodos, type TodoRecord } from '~/db';
 import Dashboard from '~/layouts/dashbord';
-import { useEffect, useState } from 'react';
+import Content from '~/components/Content';
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -12,20 +10,17 @@ export function meta({}: Route.MetaArgs) {
 		{ name: 'description', content: 'Welcome to React Router!' },
 	];
 }
+
+
 export async function loader({}: Route.LoaderArgs) {
-	const todos = await getAllTodos();
-	return { todos };
+	const data = await getAllTodos();
+	return {todos:data};
 }
 
-export default function Home({ loaderData }: Route.ComponentProps) {
-	const data = loaderData;
-	const [todos, setTodos] = useState<TodoRecord[]>([]);
 
-	useEffect(() => {
-		if (data) {
-			setTodos(data.todos);
-		}
-	}, []);
+export default function Home({loaderData}:Route.ComponentProps) {
+	const data = loaderData;
+	const navigation = useNavigation();
 
 	return (
 		<Dashboard>
@@ -56,7 +51,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 					/>
 				</Form>
 				<div className='todos pt-8'>
-					{todos.slice(0, 10).map((todo: TodoRecord) => {
+					{navigation.state === 'loading' ? <span className="loader"></span>
+					:
+					(<>{data.todos.map((todo: TodoRecord) => {
 						return (
 							<p
 								className='text-center text-md py-6 border-b border-b-slate-400/40 hover:bg-slate-300/50 cursor-pointer backdrop-blur-2xl'
@@ -65,18 +62,12 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 								{todo.createdAt}
 							</p>
 						);
-					})}
+					})}</>)}
 				</div>
 			</div>
 			<Content>
 				<div>
-					<h2>Home</h2>
-					<p>
-						Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi,
-						perspiciatis debitis odio dicta deserunt magnam impedit aperiam hic
-						consectetur, ab corporis aliquam eligendi sint quibusdam ex
-						reiciendis provident nemo quas?
-					</p>
+					
 				</div>
 			</Content>
 		</Dashboard>
