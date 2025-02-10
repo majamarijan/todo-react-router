@@ -23,6 +23,14 @@ const todosDB = {
 		todosDB.records[id] = newTodo;
 		return newTodo;
 	},
+	async getTodo(id: string) {
+		const todo = todosDB.records[id];
+		if(!todo) {
+			throw new Error('Todo not found');
+		}else {
+			return todo;
+		}
+	},
 };
 
 function generatePriority() {
@@ -53,4 +61,9 @@ export async function getAllTodos() {
 		});
 	}
 	return await todosDB.getAll();
+}
+
+
+export async function getTodo(id: string) {
+	return await todosDB.getTodo(id);
 }
