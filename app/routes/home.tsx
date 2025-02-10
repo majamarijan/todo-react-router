@@ -1,7 +1,5 @@
-import { Form, NavLink, Outlet, useLoaderData, useNavigation } from 'react-router';
 import type { Route } from './+types/home';
 import Content from '~/components/Content';
-import type { TodoRecord } from '~/db';
 
 export function meta({}: Route.MetaArgs) {
 	return [

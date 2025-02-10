@@ -1,11 +1,19 @@
 import { Form, NavLink, Outlet } from "react-router";
 import type { Route } from "../+types/root";
-import { getAllTodos, getTodo, type TodoRecord } from "~/db";
+import { getAllTodos, type TodoRecord } from "~/db";
 
 export async function loader({}: Route.LoaderArgs) {
 	const data = await getAllTodos();
-	const firstTodo = await getTodo(data[0].id);
-	return {todos: data, firstTodo}
+	return {todos: data}
+}
+
+function formatDate(date: string) {
+	return new Date(date).toLocaleDateString("en-US", {
+		// weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
 }
 
 export default function Dashboard({loaderData}: Route.ComponentProps) {
@@ -46,7 +54,7 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
 								className='flex text-center text-md py-6 border-b border-b-slate-400/40 hover:bg-slate-300/50 cursor-pointer backdrop-blur-2xl'
 								key={todo.id}
 							>
-								{todo.createdAt}
+								{formatDate(todo.createdAt!)}
 							</NavLink>
 						);
 					})}
