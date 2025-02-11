@@ -2,6 +2,7 @@ import { Form, NavLink, Outlet, useNavigation } from "react-router";
 import type { Route } from "../+types/root";
 import { getAllTodos, type TodoRecord } from "~/db";
 import Content from "~/components/Content";
+import { useTheme } from "~/context/themeContext";
 
 export async function loader({}: Route.LoaderArgs) {
 	const data = await getAllTodos();
@@ -20,9 +21,10 @@ function formatDate(date: string) {
 export default function Dashboard({loaderData}: Route.ComponentProps) {
 	const data = loaderData as {todos:TodoRecord[]} | undefined;
   const navigation = useNavigation();
+  const {theme} = useTheme();
   
   return (
-    <div className="grid grid-rows-[100px_1fr] px-4 sm:px-8 md:grid-rows-1 row-[2] grid-cols-1 md:grid-cols-[auto_2fr] bg-slate-700">
+    <div className={`grid grid-rows-[100px_1fr] px-4 sm:px-8 md:grid-rows-1 row-[2] grid-cols-1 md:grid-cols-[auto_2fr] ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
       <div className="px-4 sm:px-0 pt-8 md:row-[1]">
         <Form className="flex flex-row items-center relative" method="get">
           <button className="flex items-center">
@@ -66,7 +68,7 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
         </div>
       </div>
       <Content >
-        {navigation.state === "loading" ? <div className="loader relative left-[50px] top-5"></div>
+        {navigation.state === "loading" ? <div className="loader relative left-[50%] top-[100px]"></div>
         :
         <Outlet />
 }
