@@ -1,6 +1,6 @@
-import { getTodo, type TodoRecord } from "~/db";
+import { getTodo, removeTodo, type TodoRecord } from "~/db";
 import type { Route } from "../+types/root";
-import { Form, useNavigate } from "react-router";
+import { Form, NavLink, redirect, useNavigate } from "react-router";
 import { useState } from "react";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -11,10 +11,27 @@ export async function loader({ params }: Route.LoaderArgs) {
   return todo;
 }
 
+export async function action({params, request}:Route.ActionArgs) {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+ // if(data.id !== params.id) return redirect(`/todo/${params.id}/delete`);
+  await removeTodo(Object(data.id!));
+  return redirect(`/`);
+}
+
 export default function Delete({ loaderData }: Route.ComponentProps) {
   const todo = loaderData as TodoRecord | undefined;
-  const navigate = useNavigate();
   const [hidden, setHidden] = useState(true);
+  const [wrongID, setWrongID] = useState(false);
+
+  function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+    if (data.id !== todo?.id) {
+      e.preventDefault();
+      setWrongID(true);
+    }
+  }
   return (
     <div className="flex flex-col items-center text-center gap-12 relative min-h-[40vh]">
       <h1 className="text-xl md:text-2xl">
@@ -23,12 +40,14 @@ export default function Delete({ loaderData }: Route.ComponentProps) {
     
       </h1>
         <Form method="post"
-          className="absolute inset-0 py-8 px-4 bg-slate-200 text-slate-900 border-4 border-double border-slate-200 rounded-md flex flex-col items-center gap-8"
+          className="absolute left-0 top-0 right-0 py-8 px-4 bg-slate-200 text-slate-900 border-4 border-double border-slate-200 min-h-[20vh] rounded-md flex flex-col items-center gap-8"
           hidden={hidden}
+          onSubmit={handleSubmit}
         >
-         <label htmlFor="todoId">Please comfirm delete with the todo ID: <br /><span className="font-mono bg-slate-300 text-slate-800">
+         <label htmlFor="todoId">Please comfirm delete with the todo ID: <br /><span className="font-mono bg-slate-300 text-slate-800" onClick={()=> navigator.clipboard.writeText(todo?.id || '')}>
           {todo?.id}
         </span></label>
+        <div className={`${wrongID ? 'flex' : 'hidden'} text-red-700`}>You entered worong ID!</div>
           <input type="text" placeholder="id" className="place-self-stretch border border-slate-400 rounded mt-8 px-2" id="todoId" name="id" defaultValue={''} />
 
           <div className="flex flex-col md:flex-row gap-4">
@@ -38,12 +57,7 @@ export default function Delete({ loaderData }: Route.ComponentProps) {
           >
             Submit
           </button>
-          <button
-            className="px-4 py-2 rounded text-slate-200 bg-slate-600"
-            onClick={() => navigate(-1)}
-          >
-            Cancel
-          </button>
+          <NavLink to={`/todo/${todo?.id}`} className="px-4 py-2 rounded text-slate-200 bg-slate-600">Cancel</NavLink>
         </div>
         </Form>
 

@@ -36,7 +36,16 @@ const todosDB = {
 			todosDB.records[id] = newTodo;
 			return newTodo;
 		}
-	} 
+	},
+
+	async delete(id: string) {
+		const todo = await todosDB.records[id];
+		if(!todo) {
+			throw new Error('Todo not found');
+	}
+		delete todosDB.records[id];
+		return null;
+	}
 };
 
 export async function getAllTodos() {
@@ -51,6 +60,11 @@ export async function getTodo(id: string) {
 
 export async function editTodo(id: string, todo: TodoRecord) {
 	return await todosDB.update(id, todo);
+}
+
+export async function removeTodo(id:string) {
+	await new Promise((resolve) => setTimeout(resolve, 300));
+	return await todosDB.delete(id);
 }
 
 
