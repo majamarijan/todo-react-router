@@ -1,6 +1,7 @@
-import { Form, NavLink, Outlet } from "react-router";
+import { Form, NavLink, Outlet, useNavigation } from "react-router";
 import type { Route } from "../+types/root";
 import { getAllTodos, type TodoRecord } from "~/db";
+import Content from "~/components/Content";
 
 export async function loader({}: Route.LoaderArgs) {
 	const data = await getAllTodos();
@@ -18,6 +19,8 @@ function formatDate(date: string) {
 
 export default function Dashboard({loaderData}: Route.ComponentProps) {
 	const data = loaderData as {todos:TodoRecord[]} | undefined;
+  const navigation = useNavigation();
+  
   return (
     <div className="grid grid-rows-[100px_1fr] px-4 sm:px-8 md:grid-rows-1 row-[2] grid-cols-1 md:grid-cols-[auto_2fr] bg-slate-700">
       <div className="px-4 sm:px-0 pt-8 md:row-[1]">
@@ -51,16 +54,23 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
 						return (
 							<NavLink
 								to={`/todo/${todo.id}`}
-								className='flex text-center text-md py-6 border-b border-b-slate-400/40 hover:bg-slate-300/50 cursor-pointer backdrop-blur-2xl'
+                viewTransition
+                
+								className={({ isActive }) => `${isActive ? "bg-slate-800" : ""} block p-2 rounded hover:bg-slate-600`}
 								key={todo.id}
 							>
-								{formatDate(todo.createdAt!)}
+							{todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
 							</NavLink>
 						);
 					})}
         </div>
       </div>
-      <Outlet />
+      <Content >
+        {navigation.state === "loading" ? <div className="loader relative left-[50px] top-5"></div>
+        :
+        <Outlet />
+}
+      </Content>
     </div>
   );
 }

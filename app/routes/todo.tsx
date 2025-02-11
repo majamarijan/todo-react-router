@@ -1,25 +1,21 @@
-import { NavLink, Outlet, useLoaderData, useLocation, useNavigation } from "react-router";
-import Content from "~/components/Content";
+import { NavLink, Outlet, useLoaderData, useLocation } from "react-router";
 import type { Route } from "../+types/root";
 import { getTodo, type TodoRecord } from "~/db";
 
-export async function loader({params, request}:Route.LoaderArgs) {
+export async function loader({params}:Route.LoaderArgs) {
   const todo = await getTodo(params.id!);
   return todo;
 }
 
 export default function Todo({loaderData}:Route.ComponentProps) {
   const todo = loaderData as TodoRecord | undefined;
-  const navigation = useNavigation();
   const location = useLocation();
-
   return (
-    <Content cn="">
-      {navigation.state === 'loading' ? <div className="loader"></div> :
+    <div>
+      {
        todo && (
           <div className="flex flex-col gap-4">
-          
-            {location.pathname.includes('edit') ? <Outlet /> : (
+            {location.pathname.includes('edit') || location.pathname.includes('delete') ? <Outlet /> : (
               <>
               <span className={`w-fit px-2  rounded-full ${todo.priority === 'low' ? 'bg-green-800' : todo.priority === 'medium' ? 'bg-yellow-500' : 'bg-red-500'}`}>📌{todo.priority}</span>
           <p className="text-xl md:text-2xl">{todo.todo}</p>
@@ -32,7 +28,7 @@ export default function Todo({loaderData}:Route.ComponentProps) {
             )}
         </div>
 
-      )} 
-    </Content>
+      )}
+    </div>
   )
 }

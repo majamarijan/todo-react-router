@@ -3,6 +3,7 @@ export type TodoRecord = {
 	todo: string;
 	completed: boolean;
 	createdAt?: string;
+	updatedAt?: string;
 	priority: 'low' | 'medium' | 'high';
 };
 
@@ -26,12 +27,14 @@ const todosDB = {
 		}
 	},
 	async update(id:string, todo: TodoRecord) {
-		const oldTodo = todosDB.find(id);
+		const oldTodo = await todosDB.find(id);
 		if(!oldTodo) {
 			throw new Error('Todo not found');
 		}else {
-			todosDB.records[id] = todo;
-			return todo;
+			const updatedAt = generateDate().toString();
+			const newTodo = {...oldTodo, ...todo,  updatedAt};
+			todosDB.records[id] = newTodo;
+			return newTodo;
 		}
 	} 
 };
@@ -42,31 +45,23 @@ export async function getAllTodos() {
 
 
 export async function getTodo(id: string) {
+	await new Promise((resolve) => setTimeout(resolve, 600));
 	return await todosDB.find(id);
 }
 
 export async function editTodo(id: string, todo: TodoRecord) {
-	//Object.keys(todo).forEach((key): void => console.log(`${key}: ${todo[key]}`));
-	console.log(id)
+	return await todosDB.update(id, todo);
 }
 
-// function generatePriority() {
-// 	const priorities = ['low', 'medium', 'high'] as const;
-// 	return priorities[Math.floor(Math.random() * priorities.length)];
-// }
 
-// function generateDate() {
-// 	const randomDate = (start: Date, end: Date) => {
-// 		return new Date(
-// 			start.getTime() + Math.random() * (end.getTime() - start.getTime())
-// 		);
-// 	};
-// 	return randomDate(new Date(2022, 0, 1), new Date())
-// 		.toDateString()
-// 		.split(' ')
-// 		.slice(1)
-// 		.join('-');
-// }
+function generateDate() {
+	const randomDate = (start: Date, end: Date) => {
+		return new Date(
+			start.getTime() + Math.random() * (end.getTime() - start.getTime())
+		);
+	};
+	return randomDate(new Date(), new Date());
+}
 
 
 

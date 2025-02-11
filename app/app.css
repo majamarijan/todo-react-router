@@ -13,6 +13,10 @@ body {
     @apply  inline-block tracking-wide overflow-hidden;
   }
 
+  button {
+    @apply cursor-pointer;
+  }
+
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;

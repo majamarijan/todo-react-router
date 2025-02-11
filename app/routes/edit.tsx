@@ -1,7 +1,6 @@
-import { Form, useNavigate } from "react-router"
+import { Form, useNavigate, redirect } from "react-router"
 import type { Route } from "../+types/root";
 import { editTodo, getTodo, type TodoRecord } from "../db";
-import { useState } from "react";
 
 export async function loader({params}:Route.LoaderArgs) {
   const todo = await getTodo(params.id!);
@@ -14,14 +13,20 @@ export async function loader({params}:Route.LoaderArgs) {
 export async function action({params,request}:Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  //Object.keys(data).forEach((key) => console.log(`${key}: ${data[key]}`));
+  
+  if(!data.hasOwnProperty('completed')) {
+      Object.assign(data, {completed: false});
+  }else {
+    Object.assign(data, {completed: true});
+  }
+  await editTodo(params.id!, new Object(data) as TodoRecord);
+  return redirect(`/todo/${params.id}`);
   
 }
 
 export default function Edit({loaderData}:Route.ComponentProps) {
   const navigate = useNavigate();
   const data = loaderData as TodoRecord | undefined;
-  const [todo, setTodo] = useState(data?.todo);
   return (
     <div>
       <button onClick={() => navigate(-1)}>Back</button>
@@ -35,16 +40,19 @@ export default function Edit({loaderData}:Route.ComponentProps) {
           >
             <label htmlFor="todo">
               Todo Text:
-             </label>  
-            <input id='todo' type='text' name='text' placeholder='edit' value={todo} onChange={e => setTodo(e.target.value)} className="bg-slate-500 px-2 py-2 rounded" />
+             </label>
+             <input type='checkbox' defaultValue={data.completed ? 'on' : ''} name='completed' /> 
+            <input id='todo' type='text' name='todo' placeholder='edit' defaultValue={data.todo} className="bg-slate-500 px-2 py-2 rounded" />
             <label htmlFor="priority">Priority:</label>
-            <select name="priority" id="priority" className="bg-slate-500 px-2 py-2 rounded">
+            <select name="priority" id="priority" className="bg-slate-500 px-2 py-2 rounded" defaultValue={data.priority}>
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>  
             </select>
-            <button type="submit" className="px-4 py-2 rounded text-slate-200 bg-green-700">Save</button>
-            <button onClick={() => navigate(-1)}>Cancel</button>
+            <div className="flex flex-col md:flex-row gap-4">
+      <button type="submit" className="px-4 py-2 rounded text-slate-200 bg-green-700">Save</button>
+      <button className="px-4 py-2 rounded text-slate-200 bg-slate-600" onClick={() => navigate(-1)}>Cancel</button>
+      </div>
           </Form>
         )}
     </div>
