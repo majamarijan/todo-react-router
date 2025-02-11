@@ -14,7 +14,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 export async function action({params, request}:Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
- // if(data.id !== params.id) return redirect(`/todo/${params.id}/delete`);
   await removeTodo(Object(data.id!));
   return redirect(`/`);
 }
