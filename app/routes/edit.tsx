@@ -19,8 +19,8 @@ export async function action({params,request}:Route.ActionArgs) {
   }else {
     Object.assign(data, {completed: true});
   }
-  await editTodo(params.id!, new Object(data) as TodoRecord);
-  return redirect(`/todo/${params.id}`);
+  const todo = await editTodo(params.id!, new Object(data) as TodoRecord);
+  return redirect(`/todo/${new Date(todo.updatedAt).getFullYear()}/${params.id}`);
   
 }
 

@@ -3,13 +3,14 @@ import type { Route } from "../+types/root";
 import { getAllTodos, type TodoRecord } from "~/db";
 import Content from "~/components/Content";
 import { Fragment } from "react/jsx-runtime";
+import React, { useRef } from "react";
 
 
 
 export async function loader({params, request}: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  const data = await getAllTodos();
+  const data = await getAllTodos(q || '');
 	return {todos: data, query: q};
 }
 
@@ -28,7 +29,8 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
   const year = new Date().getFullYear();
   const submit = useSubmit();
   const searching = navigation.location && new URLSearchParams(navigation.location.search).has('q');
-  
+  const searchRef = useRef(document.querySelector('input[name="q"]')) as React.RefObject<HTMLInputElement>;
+
   return (
     <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_2fr] pt-12 pb-20 md:gap-8 `}>
       <div className="px-4 sm:px-0 md:row-[1]">
@@ -71,6 +73,7 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
             </svg>
           </button>
           <input
+          ref={searchRef}
             type="search"
             name="q"
             placeholder="Search year"
@@ -87,10 +90,10 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
             />
         </Form>
        <div className="grid grid-cols-[repeat(auto-fit,minmax(auto,1fr))] gap-2 md:hidden pt-8 ">
-           <TodoList todos={data?.todos} />
+           <TodoList todos={data?.todos} search={searchRef} />
         </div>
        <div className="todos pt-8 hidden md:block">
-          <TodoList todos={data?.todos}  />
+          <TodoList todos={data?.todos} search={searchRef}  />
         </div>
       </div>
       <Content>
@@ -103,10 +106,13 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
   );
 }
 
-function TodoList({todos}: {todos?: TodoRecord[]}) {
+function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObject<HTMLInputElement>}) {
+  const list = search?.current?.value ? todos?.filter((todo) => todo.createdAt.includes(search?.current?.value) || todo.updatedAt?.includes(search?.current?.value)) as TodoRecord[] : todos;
+  const filteredListAfterUpdate = list!.filter((todo) =>!todo.updatedAt);
+  const displaList = list ?  filteredListAfterUpdate.length < list.length ? filteredListAfterUpdate : list;
   return (
     <Fragment>
-      {todos?.map((todo: TodoRecord) => {
+      {displaList?.map((todo: TodoRecord) => {
         const year = (new Date(todo.createdAt).getFullYear()).toString() || (new Date(todo.updatedAt!).getFullYear()).toString();
               return (
                 <NavLink

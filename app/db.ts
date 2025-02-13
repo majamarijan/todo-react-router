@@ -49,14 +49,11 @@ const todosDB = {
 	}
 };
 
-export async function getAllTodos() {
+export async function getAllTodos(q?:string) {
 	await new Promise((resolve) => setTimeout(resolve, 400));
 	const todos = await todosDB.findAll();
-	console.log(q)
 	if (q) {
-		const list =  q ? todos.filter((todo) => todo.createdAt.includes(q) || todo.updatedAt?.includes(q)) as TodoRecord[] : todos;
-		return list;
-	//	return todos.filter((todo) => todo.createdAt.includes(q.toLowerCase()));
+		return todos.filter((todo) => todo.createdAt.includes(q.toLowerCase()));
   }
 	return todos;
 }
