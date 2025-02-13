@@ -1,5 +1,4 @@
 import type { Route } from './+types/home';
-import Content from '~/components/Content';
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -12,8 +11,6 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
 	return (
-		<Content>
-			<h1>Welcome to Todo App with React Router!! 💖</h1>
-		</Content>
+			<h1 className='hidden md:block text-xl sm:text-2xl md:text-3xl lg:text-5xl lg:leading-[1.5] xl:text-6xl'>Welcome to Todo App with React Router!! 💖</h1>
 	);
 }

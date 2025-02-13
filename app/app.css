@@ -1,13 +1,28 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --color-primary: #1a1a1a;
+  --color-secondary: #0F192E;
+  --color-primaryLight: #fff;
+  --color-secondaryLight: #E5E5E5;
+  
+  --color-orange: #FCA311;
+  --color-blue: #375BA9;
+  --color-yellow: #D0B30C;
+  --color-lightBlue: #849ED7;
+  --color-red:#A12502;
+  --color-green:#19615C;
+  --color-darkGreen: #134740;
 }
+
 
 html,
 body {
-  @apply bg-white dark:bg-black;
+  @apply  dark:bg-primary bg-primaryLight text-primary dark:text-primaryLight font-sans;
 
   nav a {
     @apply  inline-block tracking-wide overflow-hidden;
@@ -16,7 +31,6 @@ body {
   button {
     @apply cursor-pointer;
   }
-
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;

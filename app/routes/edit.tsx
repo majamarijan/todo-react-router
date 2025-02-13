@@ -28,23 +28,23 @@ export default function Edit({loaderData}:Route.ComponentProps) {
   const navigate = useNavigate();
   const data = loaderData as TodoRecord | undefined;
   return (
-    <div>
-      <button onClick={() => navigate(-1)}>Back</button>
+    <div className="md:pt-14">
       
-      <h1>Edit Page</h1>
-    
         {data && (
-          <Form className="flex flex-col gap-4 border border-slate-400 rounded p-4"
+          <Form className="flex flex-col gap-4 border border-slate-400/40 shadow-[0_0_12px_rgba(200,200,200,.4)] shadow-primaryLight rounded p-4 max-w-prose"
             method="post"
             onSubmit={()=> console.log('submitted')}
           >
+            <div>
+            <label htmlFor="completed">Completed: </label>
+             <input type='checkbox' defaultValue={data.completed ? 'on' : ''} name='completed' className="place-self-start ml-2" id='completed' /> 
+            </div>
             <label htmlFor="todo">
-              Todo Text:
+              Edit Text:
              </label>
-             <input type='checkbox' defaultValue={data.completed ? 'on' : ''} name='completed' /> 
-            <input id='todo' type='text' name='todo' placeholder='edit' defaultValue={data.todo} className="bg-slate-500 px-2 py-2 rounded" />
-            <label htmlFor="priority">Priority:</label>
-            <select name="priority" id="priority" className="bg-slate-500 px-2 py-2 rounded" defaultValue={data.priority}>
+            <input id='todo' type='text' name='todo' placeholder='edit' defaultValue={data.todo} className="bg-secondaryLight text-primary px-2 py-2 rounded" />
+            <label htmlFor="priority">Edit Priority:</label>
+            <select name="priority" id="priority" className="bg-secondaryLight text-primary px-2 py-2 rounded" defaultValue={data.priority}>
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>  

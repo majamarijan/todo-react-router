@@ -4,7 +4,7 @@ import { getTodo, type TodoRecord } from "~/db";
 
 export async function loader({params}:Route.LoaderArgs) {
   const todo = await getTodo(params.id!);
-  return todo;
+ return todo;
 }
 
 export default function Todo({loaderData}:Route.ComponentProps) {
@@ -18,10 +18,10 @@ export default function Todo({loaderData}:Route.ComponentProps) {
             {location.pathname.includes('edit') || location.pathname.includes('delete') ? <Outlet /> : (
               <>
               <span className={`w-fit px-2  rounded-full ${todo.priority === 'low' ? 'bg-green-800' : todo.priority === 'medium' ? 'bg-yellow-500' : 'bg-red-500'}`}>📌{todo.priority}</span>
-          <p className="text-xl md:text-2xl">{todo.todo}</p>
+          <p className="text-xl md:text-2xl max-w-md">{todo.todo}</p>
           
           <div className="flex gap-4">
-            <NavLink to={`edit`} className="px-4 py-2 rounded bg-yellow-300 text-slate-500">Edit</NavLink>
+            <NavLink to={`edit`} className="px-4 py-2 rounded bg-darkGreen text-primaryLight">Edit</NavLink>
             <NavLink to={`delete`} className="px-4 py-2 rounded bg-red-700">Delete</NavLink>
             </div>
               </>

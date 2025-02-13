@@ -5,14 +5,14 @@ export default function Header() {
 	const location = useLocation();
 	const {theme, toggleTheme} = useTheme();
 	return (
-		<header className={`${theme === 'dark' ? 'bg-black' : 'bg-blue-800'} px-8 flex items-center justify-between row-[1]`}>
-			<span>Logo</span>
+		<header className={`dark:bg-black bg-secondaryLight text-primary dark:text-primaryLight px-8 flex items-center justify-between row-[1]`}>
+			<span className="font-mono text-xl">🗒️TX</span>
 			<nav className='flex-row hidden sm:flex items-center gap-4'>
-				<ul className='grid grid-cols-[80px_80px_80px] items-center justify-start w-fit '>
+				<ul className='grid [grid-auto-columns:80px] grid-flow-col-dense items-center justify-start w-fit '>
 					<NavLink
 						className={({ isActive }: { isActive: boolean }) => {
 							return `${isActive && location.pathname === '/' || location.pathname.startsWith('/todo') ? 'bg-orange-400' : ''
-								} p-2 no-underline text-slate-50 hover:text-white hover:font-bold  text-center rounded`;
+								} p-2 no-underline hover:font-bold  text-center rounded`;
 						}}
 						to='/'
 					>
@@ -22,27 +22,20 @@ export default function Header() {
 						className={({ isActive }: { isActive: boolean }) => {
 							return `${
 								isActive ? 'bg-orange-400' : ''
-							} p-2 no-underline text-slate-50 hover:text-white hover:font-bold  text-center rounded`;
+							} py-2 no-underline hover:font-bold text-center rounded`;
 						}}
-						to='/about'
+						to='/posts'
 					>
-						About
-					</NavLink>
-					<NavLink
-						className={({ isActive }: { isActive: boolean }) => {
-							return `${
-								isActive ? 'bg-orange-400' : ''
-							} p-2 no-underline text-slate-50 hover:text-white hover:font-bold  text-center rounded`;
-						}}
-						to='/contact'
-					>
-						Contact
+						Posts
 					</NavLink>
 				</ul>
-				<div className="bg-slate-800 py-2 relative w-[60px] flex items-center rounded-lg ">
-					<div className={`${theme === 'dark' ? 'bg-blue-800 translate-x-full' : 'bg-white translate-x-0'} rounded-lg transition-all duration-300 absolute top-0 left-0 z-1 w-1/2 h-full `}></div>
+				<div className="py-2 relative w-[60px] flex items-center rounded-lg ">
+					<div className={`${theme === 'dark' ? 'bg-blue translate-x-full' : 'bg-yellow translate-x-0'} rounded-lg transition-all duration-300 absolute top-0 left-0 z-1 w-1/2 h-full `}></div>
 					<button className="relative z-10 flex flex-row items-center justify-around w-full"
-						onClick={()=> toggleTheme()}
+						onClick={()=> {
+							const val = theme === 'dark' ? 'light' : 'dark';
+							toggleTheme(val);
+						}}
 					>
 						<span>🌞</span>
 						<span>🌛</span>

@@ -9,11 +9,12 @@ export default [
 	layout('layouts/layout.tsx', [
 		layout('layouts/dashbord.tsx', [
 			index('routes/home.tsx'),
-			route('todo/:id', 'routes/todo.tsx', [
+			route('todo/:year/:id', 'routes/todo.tsx',
+			[
 				route('edit', 'routes/edit.tsx'),
 				route('delete', 'routes/delete.tsx'),
 			]),
 		]),
-		route('about', 'routes/about.tsx'),
+		route('posts', 'routes/posts.tsx'),
 	]),
 ] satisfies RouteConfig;

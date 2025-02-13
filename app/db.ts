@@ -2,7 +2,7 @@ export type TodoRecord = {
 	id: string;
 	todo: string;
 	completed: boolean;
-	createdAt?: string;
+	createdAt: string;
 	updatedAt?: string;
 	priority: 'low' | 'medium' | 'high';
 };
@@ -26,6 +26,7 @@ const todosDB = {
 			return todo;
 		}
 	},
+
 	async update(id:string, todo: TodoRecord) {
 		const oldTodo = await todosDB.find(id);
 		if(!oldTodo) {
@@ -39,7 +40,7 @@ const todosDB = {
 	},
 
 	async delete(id: string) {
-		const todo = await todosDB.records[id];
+		const todo = todosDB.records[id];
 		if(!todo) {
 			throw new Error('Todo not found');
 	}
@@ -49,13 +50,20 @@ const todosDB = {
 };
 
 export async function getAllTodos() {
-	return await todosDB.findAll();
+	await new Promise((resolve) => setTimeout(resolve, 400));
+	const todos = await todosDB.findAll();
+	console.log(q)
+	if (q) {
+		const list =  q ? todos.filter((todo) => todo.createdAt.includes(q) || todo.updatedAt?.includes(q)) as TodoRecord[] : todos;
+		return list;
+	//	return todos.filter((todo) => todo.createdAt.includes(q.toLowerCase()));
+  }
+	return todos;
 }
-
 
 export async function getTodo(id: string) {
 	await new Promise((resolve) => setTimeout(resolve, 600));
-	return await todosDB.find(id);
+	return await todosDB.find(id);	
 }
 
 export async function editTodo(id: string, todo: TodoRecord) {

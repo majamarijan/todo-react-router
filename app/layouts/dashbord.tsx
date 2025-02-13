@@ -1,12 +1,16 @@
-import { Form, NavLink, Outlet, useNavigation } from "react-router";
+import { Form, NavLink, Outlet, useNavigation, useSubmit } from "react-router";
 import type { Route } from "../+types/root";
 import { getAllTodos, type TodoRecord } from "~/db";
 import Content from "~/components/Content";
-import { useTheme } from "~/context/themeContext";
+import { Fragment } from "react/jsx-runtime";
 
-export async function loader({}: Route.LoaderArgs) {
-	const data = await getAllTodos();
-	return {todos: data}
+
+
+export async function loader({params, request}: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  const data = await getAllTodos();
+	return {todos: data, query: q};
 }
 
 function formatDate(date: string) {
@@ -19,15 +23,38 @@ function formatDate(date: string) {
 }
 
 export default function Dashboard({loaderData}: Route.ComponentProps) {
-	const data = loaderData as {todos:TodoRecord[]} | undefined;
+	const data = loaderData as {todos:TodoRecord[], query?:string} | undefined;
   const navigation = useNavigation();
-  const {theme} = useTheme();
+  const year = new Date().getFullYear();
+  const submit = useSubmit();
+  const searching = navigation.location && new URLSearchParams(navigation.location.search).has('q');
   
   return (
-    <div className={`grid grid-rows-[100px_1fr] px-4 sm:px-8 md:grid-rows-1 row-[2] grid-cols-1 md:grid-cols-[auto_2fr] ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
-      <div className="px-4 sm:px-0 pt-8 md:row-[1]">
-        <Form className="flex flex-row items-center relative" method="get">
-          <button className="flex items-center">
+    <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_2fr] pt-12 pb-20 md:gap-8 `}>
+      <div className="px-4 sm:px-0 md:row-[1]">
+        <Form className="flex flex-row items-center relative" method="get"
+        onSubmit={(e)=> {
+          e.preventDefault();
+          //check if the form is valid
+          if(e.currentTarget.checkValidity()) {
+            if(e.currentTarget.q.value) {
+             submit(e.currentTarget, {method: 'get'});
+            }
+          }
+        }}
+        onChange={(e) => {
+          //check if the form is valid
+          if(e.currentTarget.checkValidity()) {
+            if(e.currentTarget.q.value !== '') {
+              submit(e.currentTarget, {method: 'get'});
+            }else {
+             submit(e.currentTarget, {method: 'get'});
+            }
+          }
+        }}
+        role="search"
+        >
+          <button type='submit' className="flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -46,28 +73,27 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
           <input
             type="search"
             name="q"
-            placeholder="Search"
+            placeholder="Search year"
             aria-label="Search todos"
             className="border-none rounded-full px-1 py-2 outline-1 pl-12"
+            id="q"
+            pattern={`^(?!.*\S)|201[9]|202[0-${String(year).slice(3)}]`}
+            defaultValue={data?.query || ''}
           />
+          <div
+              aria-hidden
+              hidden={!searching}
+              id="search-spinner"
+            />
         </Form>
-        <div className="todos pt-8">
-          {data?.todos.map((todo: TodoRecord) => {
-						return (
-							<NavLink
-								to={`/todo/${todo.id}`}
-                viewTransition
-                
-								className={({ isActive }) => `${isActive ? "bg-slate-800" : ""} block p-2 rounded hover:bg-slate-600`}
-								key={todo.id}
-							>
-							{todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
-							</NavLink>
-						);
-					})}
+       <div className="grid grid-cols-[repeat(auto-fit,minmax(auto,1fr))] gap-2 md:hidden pt-8 ">
+           <TodoList todos={data?.todos} />
+        </div>
+       <div className="todos pt-8 hidden md:block">
+          <TodoList todos={data?.todos}  />
         </div>
       </div>
-      <Content >
+      <Content>
         {navigation.state === "loading" ? <div className="loader relative left-[50%] top-[100px]"></div>
         :
         <Outlet />
@@ -75,4 +101,24 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
       </Content>
     </div>
   );
+}
+
+function TodoList({todos}: {todos?: TodoRecord[]}) {
+  return (
+    <Fragment>
+      {todos?.map((todo: TodoRecord) => {
+        const year = (new Date(todo.createdAt).getFullYear()).toString() || (new Date(todo.updatedAt!).getFullYear()).toString();
+              return (
+                <NavLink
+                  to={`/todo/${year}/${todo.id}`}
+                  viewTransition
+                  className={({ isActive }) => `${isActive ? "bg-blue" : ""} block p-2 rounded hover:bg-slate-600`}
+                  key={todo.id}
+                >
+                {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
+                </NavLink>
+              );
+            })}
+    </Fragment>
+  )
 }
