@@ -12,7 +12,7 @@ const todosDB = {
 	async findAll(): Promise<TodoRecord[]> {
 		return Object.keys(todosDB.records).map((key) => todosDB.records[key]);
 	},
-	async set(todo?: TodoRecord): Promise<TodoRecord> {
+	async add(todo?: TodoRecord): Promise<TodoRecord> {
 		const id = crypto.randomUUID();
 		const date = new Date().toString();
 		let createdTodo;
@@ -59,10 +59,11 @@ const todosDB = {
 export async function getAllTodos(q?:string) {
 	await new Promise((resolve) => setTimeout(resolve, 400));
 	const todos = await todosDB.findAll();
+	const sorted = sortTodos(todos);
 	if (q) {
-		return todos.filter((todo) => todo.createdAt.includes(q.toLowerCase()) || todo.updatedAt?.includes(q.toLowerCase()));
+		return sorted.filter((todo) => todo.createdAt.includes(q.toLowerCase()) || todo.updatedAt?.includes(q.toLowerCase()));
   }
-	return todos;
+	return sorted;
 }
 
 export async function getTodo(id: string) {
@@ -71,7 +72,7 @@ export async function getTodo(id: string) {
 }
 
 export async function createTodo() {
-	return await todosDB.set();
+	return await todosDB.add();
 }
 
 export async function editTodo(id: string, todo: TodoRecord) {
@@ -81,6 +82,15 @@ export async function editTodo(id: string, todo: TodoRecord) {
 export async function removeTodo(id:string) {
 	await new Promise((resolve) => setTimeout(resolve, 300));
 	return await todosDB.delete(id);
+}
+
+function sortTodos(todos: TodoRecord[]) {
+  return  todos?.sort((a,b)=> (
+    (!a.updatedAt && !b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 &&
+    (!a.updatedAt && b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1 &&
+    (a.updatedAt && !b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 && 
+    (a.updatedAt && b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1
+  ));
 }
 
 

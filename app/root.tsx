@@ -31,6 +31,11 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect(`/todo/${new Date(todo.createdAt).getFullYear()}/${todo.id}/edit`);
 }
 
+export async function clientLoader({}: Route.ClientLoaderArgs) {
+	const theme = localStorage.getItem('theme');
+	console.log(theme)
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
