@@ -109,16 +109,16 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
 function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObject<HTMLInputElement>}) {
   const list = search?.current?.value ? todos?.filter((todo) => todo.createdAt.includes(search?.current?.value) || todo.updatedAt?.includes(search?.current?.value)) as TodoRecord[] : todos;
   const filteredListAfterUpdate = list!.filter((todo) =>!todo.updatedAt);
-  const displaList = list ?  filteredListAfterUpdate.length < list.length ? filteredListAfterUpdate : list;
+  const displayList = list && search?.current?.value ?  filteredListAfterUpdate.length < list.length ? filteredListAfterUpdate : list : todos;
   return (
     <Fragment>
-      {displaList?.map((todo: TodoRecord) => {
+      {displayList?.map((todo: TodoRecord) => {
         const year = (new Date(todo.createdAt).getFullYear()).toString() || (new Date(todo.updatedAt!).getFullYear()).toString();
               return (
                 <NavLink
                   to={`/todo/${year}/${todo.id}`}
                   viewTransition
-                  className={({ isActive }) => `${isActive ? "bg-blue" : ""} block p-2 rounded hover:bg-slate-600`}
+                  className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded`}
                   key={todo.id}
                 >
                 {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}

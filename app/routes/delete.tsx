@@ -32,7 +32,7 @@ export default function Delete({ loaderData }: Route.ComponentProps) {
     }
   }
   return (
-    <div className="flex flex-col items-center text-center gap-12 relative min-h-[40vh]">
+    <div className="flex flex-col items-center text-center gap-12 relative min-h-[40vh] max-w-prose">
       <h1 className="text-xl md:text-2xl">
         Are you sure you want to delete todo <br />{" "}
         <span className="text-xl font-bold">{todo?.todo}</span>?{" "}

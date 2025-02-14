@@ -28,6 +28,14 @@ body {
     @apply  inline-block tracking-wide overflow-hidden;
   }
 
+  a {
+    @apply no-underline cursor-pointer;
+  }
+
+  a:hover {
+      @apply bg-blue/20;
+    }
+
   button {
     @apply cursor-pointer;
   }
