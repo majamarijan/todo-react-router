@@ -2,7 +2,7 @@ export type TodoRecord = {
 	id: string;
 	todo: string;
 	completed: boolean;
-	createdAt: string;
+	createdAt:string;
 	updatedAt?: string;
 	priority: 'low' | 'medium' | 'high';
 };
@@ -12,11 +12,18 @@ const todosDB = {
 	async findAll(): Promise<TodoRecord[]> {
 		return Object.keys(todosDB.records).map((key) => todosDB.records[key]);
 	},
-	async createTodo(todo: TodoRecord): Promise<TodoRecord> {
+	async set(todo?: TodoRecord): Promise<TodoRecord> {
 		const id = crypto.randomUUID();
-		todo.id = id;
-		todosDB.records[id] = todo;
-		return todo;
+		const date = new Date().toString();
+		let createdTodo;
+		if(todo) {
+			createdTodo = {...todo, id, createdAt: date};
+		}else {
+			const todo: TodoRecord = {todo: '', id: id, completed: false, priority: 'low', createdAt: date};
+			createdTodo = todo;
+		}
+			todosDB.records[id] = createdTodo;
+			return createdTodo;
 	},
 	async find(id: string) {
 		const todo = todosDB.records[id];
@@ -61,6 +68,10 @@ export async function getAllTodos(q?:string) {
 export async function getTodo(id: string) {
 	await new Promise((resolve) => setTimeout(resolve, 600));
 	return await todosDB.find(id);	
+}
+
+export async function createTodo() {
+	return await todosDB.set();
 }
 
 export async function editTodo(id: string, todo: TodoRecord) {

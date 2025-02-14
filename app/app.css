@@ -28,6 +28,10 @@ body {
     @apply  inline-block tracking-wide overflow-hidden;
   }
 
+  nav a:hover {
+    @apply bg-orange/80;
+  }
+
   a {
     @apply no-underline cursor-pointer;
   }
@@ -35,7 +39,9 @@ body {
   a:hover {
       @apply bg-blue/20;
     }
-
+  a.cancel:hover {
+    @apply bg-blue/80;
+  }
   button {
     @apply cursor-pointer;
   }

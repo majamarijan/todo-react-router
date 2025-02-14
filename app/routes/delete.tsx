@@ -56,7 +56,7 @@ export default function Delete({ loaderData }: Route.ComponentProps) {
           >
             Submit
           </button>
-          <NavLink to={'..'} className="px-4 py-2 rounded text-slate-200 bg-slate-600">Cancel</NavLink>
+          <NavLink to={'..'} className="cancel px-4 py-2 rounded text-slate-200 bg-slate-800">Cancel</NavLink>
         </div>
         </Form>
 

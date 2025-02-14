@@ -3,6 +3,7 @@ import {
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
 } from "react-router";
@@ -10,6 +11,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import ThemeProvider from "./context/themeContext";
+import { createTodo } from "./db";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,6 +25,11 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+export async function action({ request }: Route.ActionArgs) {
+  const todo = await createTodo();
+  return redirect(`/todo/${new Date(todo.createdAt).getFullYear()}/${todo.id}/edit`);
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -1,8 +1,7 @@
-import { Form, NavLink, Outlet, useNavigation, useSubmit } from "react-router";
+import { Form, NavLink, Outlet, redirect, useNavigation, useSubmit } from "react-router";
 import type { Route } from "../+types/root";
-import { getAllTodos, type TodoRecord } from "~/db";
+import { createTodo, getAllTodos, getTodo, type TodoRecord } from "~/db";
 import Content from "~/components/Content";
-import { Fragment } from "react/jsx-runtime";
 import React, { useRef } from "react";
 
 
@@ -23,6 +22,15 @@ function formatDate(date: string) {
 	});
 }
 
+function sortTodos(todos: TodoRecord[]) {
+  return  todos?.sort((a,b)=> (
+    (!a.updatedAt && !b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 &&
+    (!a.updatedAt && b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1 &&
+    (a.updatedAt && !b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 && 
+    (a.updatedAt && b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1
+  ));
+}
+
 export default function Dashboard({loaderData}: Route.ComponentProps) {
 	const data = loaderData as {todos:TodoRecord[], query?:string} | undefined;
   const navigation = useNavigation();
@@ -30,14 +38,9 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
   const submit = useSubmit();
   const searching = navigation.location && new URLSearchParams(navigation.location.search).has('q');
   const searchRef = useRef(document.querySelector('input[name="q"]')) as React.RefObject<HTMLInputElement>;
-  const sortedTodos = data?.todos.sort((a,b)=> (
-    (!a.updatedAt && !b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 &&
-    (!a.updatedAt && b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1 &&
-    (a.updatedAt && !b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 && 
-    (a.updatedAt && b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1
-  ));
+  const sortedTodos = sortTodos(data!.todos);
   return (
-    <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_1fr] w-full lg:w-5xl border border-slate-400 mx-auto pt-12 pb-20 gap-8 place-items-center`}>
+    <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_1fr] w-full lg:w-5xl  mx-auto pt-12 pb-20 gap-8 place-items-center`}>
       <div className="px-4 sm:px-0 md:row-[1]">
         <Form className="flex flex-row items-center relative" method="get"
         onSubmit={(e)=> {
@@ -100,6 +103,7 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
         {navigation.state === "loading" ? <div className="loader"></div>
         :
         <Outlet />
+    
 }
       </Content>
     </div>
@@ -111,22 +115,26 @@ function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObje
   const filteredListAfterUpdate = list!.filter((todo) =>!todo.updatedAt);
   const displayList = list && search?.current?.value ?  filteredListAfterUpdate.length < list.length ? filteredListAfterUpdate : list : todos;
   return (
-    <div className={`todos pt-8 max-w-lg flex flex-col gap-2 ${search?.current?.value ? 'block' : 'hidden'}`}>
+    <div>
+      <Form method='post' onSubmit={()=> console.log('submitted')}>
+        <input type="submit" value='Add New' className="p-2 rounded bg-darkGreen text-primaryLight" />
+			</Form>
+    <div className={`todos pt-8 max-w-lg flex flex-col gap-2 ${search?.current?.value ? 'block' : 'hidden md:block'}`}>
       {displayList?.map((todo: TodoRecord) => {
         //if updated show latest year in the url
         const year = Number(new Date(todo.updatedAt!).getFullYear()) > Number(new Date(todo.createdAt).getFullYear()) ? (new Date(todo.updatedAt!).getFullYear()).toString() : (new Date(todo.createdAt).getFullYear()).toString();
-              return (
-              <NavLink
-                  to={`/todo/${year}/${todo.id}`}
-                  viewTransition
-                  className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded`}
-                  key={todo.id}
-                >
-                {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
-                </NavLink> 
-              
-              );
-            })}
+        return (
+          
+                <NavLink
+                to={`/todo/${year}/${todo.id}`}
+                     viewTransition
+                     className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded`}
+                     key={todo.id}
+                     >
+                   {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
+                   </NavLink> 
+              )})}
     </div>
+              </div>
   )
 }
