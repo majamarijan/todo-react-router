@@ -18,16 +18,6 @@ export default function Header() {
 					>
 						Home
 					</NavLink>
-					<NavLink
-						className={({ isActive }: { isActive: boolean }) => {
-							return `${
-								isActive ? 'bg-orange-400' : ''
-							} py-2 no-underline hover:font-bold text-center rounded`;
-						}}
-						to='/posts'
-					>
-						Posts
-					</NavLink>
 				</ul>
 				<div className="py-2 relative w-[60px] flex items-center rounded-lg ">
 					<div className={`${theme === 'dark' ? 'bg-blue translate-x-full' : 'bg-yellow translate-x-0'} rounded-lg transition-all duration-300 absolute top-0 left-0 z-1 w-1/2 h-full `}></div>

@@ -53,7 +53,7 @@ export async function getAllTodos(q?:string) {
 	await new Promise((resolve) => setTimeout(resolve, 400));
 	const todos = await todosDB.findAll();
 	if (q) {
-		return todos.filter((todo) => todo.createdAt.includes(q.toLowerCase()));
+		return todos.filter((todo) => todo.createdAt.includes(q.toLowerCase()) || todo.updatedAt?.includes(q.toLowerCase()));
   }
 	return todos;
 }

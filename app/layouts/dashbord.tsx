@@ -30,9 +30,14 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
   const submit = useSubmit();
   const searching = navigation.location && new URLSearchParams(navigation.location.search).has('q');
   const searchRef = useRef(document.querySelector('input[name="q"]')) as React.RefObject<HTMLInputElement>;
-
+  const sortedTodos = data?.todos.sort((a,b)=> (
+    (!a.updatedAt && !b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 &&
+    (!a.updatedAt && b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1 &&
+    (a.updatedAt && !b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 && 
+    (a.updatedAt && b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1
+  ));
   return (
-    <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_2fr] pt-12 pb-20 md:gap-8 `}>
+    <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_1fr] w-full lg:w-5xl border border-slate-400 mx-auto pt-12 pb-20 gap-8 place-items-center`}>
       <div className="px-4 sm:px-0 md:row-[1]">
         <Form className="flex flex-row items-center relative" method="get"
         onSubmit={(e)=> {
@@ -89,15 +94,10 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
               id="search-spinner"
             />
         </Form>
-       <div className="grid grid-cols-[repeat(auto-fit,minmax(auto,1fr))] gap-2 md:hidden pt-8 ">
-           <TodoList todos={data?.todos} search={searchRef} />
-        </div>
-       <div className="todos pt-8 hidden md:block">
-          <TodoList todos={data?.todos} search={searchRef}  />
-        </div>
+          <TodoList todos={sortedTodos} search={searchRef}  />
       </div>
       <Content>
-        {navigation.state === "loading" ? <div className="loader relative left-[50%] top-[100px]"></div>
+        {navigation.state === "loading" ? <div className="loader"></div>
         :
         <Outlet />
 }
@@ -111,20 +111,22 @@ function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObje
   const filteredListAfterUpdate = list!.filter((todo) =>!todo.updatedAt);
   const displayList = list && search?.current?.value ?  filteredListAfterUpdate.length < list.length ? filteredListAfterUpdate : list : todos;
   return (
-    <Fragment>
+    <div className={`todos pt-8 max-w-lg flex flex-col gap-2 ${search?.current?.value ? 'block' : 'hidden'}`}>
       {displayList?.map((todo: TodoRecord) => {
-        const year = (new Date(todo.createdAt).getFullYear()).toString() || (new Date(todo.updatedAt!).getFullYear()).toString();
+        //if updated show latest year in the url
+        const year = Number(new Date(todo.updatedAt!).getFullYear()) > Number(new Date(todo.createdAt).getFullYear()) ? (new Date(todo.updatedAt!).getFullYear()).toString() : (new Date(todo.createdAt).getFullYear()).toString();
               return (
-                <NavLink
+              <NavLink
                   to={`/todo/${year}/${todo.id}`}
                   viewTransition
                   className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded`}
                   key={todo.id}
                 >
                 {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
-                </NavLink>
+                </NavLink> 
+              
               );
             })}
-    </Fragment>
+    </div>
   )
 }

@@ -11,6 +11,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
 	return (
-			<h1 className='hidden md:block text-xl sm:text-2xl md:text-3xl lg:text-5xl lg:leading-[1.5] xl:text-6xl'>Welcome to Todo App with React Router!! 💖</h1>
+			<h1 className='text-xl sm:text-2xl md:text-3xl max-w-prose text-center'> 
+			<span className='hidden md:block'>Welcome to Todo App <br /> with React Router!! 💖</span>
+			<span className='md:hidden block'>Search for Todos</span></h1>
 	);
 }

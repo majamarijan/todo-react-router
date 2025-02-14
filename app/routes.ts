@@ -15,6 +15,5 @@ export default [
 				route('delete', 'routes/delete.tsx'),
 			]),
 		]),
-		route('posts', 'routes/posts.tsx'),
 	]),
 ] satisfies RouteConfig;

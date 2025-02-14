@@ -17,7 +17,7 @@ export default function Todo({loaderData}:Route.ComponentProps) {
           <div className="flex flex-col gap-4">
             {location.pathname.includes('edit') || location.pathname.includes('delete') ? <Outlet /> : (
               <>
-              <span className={`w-fit px-2  rounded-full ${todo.priority === 'low' ? 'bg-green-800' : todo.priority === 'medium' ? 'bg-yellow-500' : 'bg-red-500'}`}>📌{todo.priority}</span>
+              <span className={`w-fit px-2  rounded-full ${todo.priority === 'low' ? 'bg-green-800/60' : todo.priority === 'medium' ? 'bg-yellow/40' : 'bg-red-500/60'}`}>📌{todo.priority}</span>
           <p className="text-xl md:text-2xl max-w-md">{todo.todo}</p>
           
           <div className="flex gap-4">
