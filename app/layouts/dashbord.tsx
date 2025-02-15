@@ -32,8 +32,9 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
   
   return (
     <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_1fr] w-full lg:w-5xl  mx-auto pt-12 pb-20 gap-8 place-items-center`}>
+
       <div className="px-4 sm:px-0 md:row-[1]">
-        <Form className="flex flex-row items-center relative" method="get"
+        <Form className="flex flex-row items-center relative mb-8" method="get"
         onSubmit={(e)=> {
           e.preventDefault();
           //check if the form is valid
@@ -88,6 +89,8 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
               id="search-spinner"
             />
         </Form>
+       
+     
           <TodoList todos={data?.todos} search={searchRef}  />
       </div>
       <Content>
@@ -107,11 +110,7 @@ function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObje
   const displayList = list && search?.current?.value ?  filteredListAfterUpdate.length < list.length ? filteredListAfterUpdate : list : todos;
  
   return (
-    <div>
-      <Form method='post' onSubmit={()=> console.log('submitted')}>
-        <input type="submit" value='Add New' className="p-2 rounded bg-darkGreen text-primaryLight" />
-			</Form>
-    <div className={`todos pt-8 max-w-lg flex flex-col gap-2 ${search?.current?.value ? 'block' : 'hidden md:block'}`}>
+    <div className={`todos max-w-lg flex flex-col gap-2 ${search?.current?.value ? 'block' : 'hidden md:block'} h-[55vh] overflow-y-scroll`}>
       {displayList?.map((todo: TodoRecord) => {
         //if updated show latest year in the url
         const year = Number(new Date(todo.updatedAt!).getFullYear()) > Number(new Date(todo.createdAt).getFullYear()) ? (new Date(todo.updatedAt!).getFullYear()).toString() : (new Date(todo.createdAt).getFullYear()).toString();
@@ -120,13 +119,13 @@ function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObje
                 <NavLink
                 to={`/todo/${year}/${todo.id}`}
                      viewTransition
-                     className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded`}
+                     className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded w-fit`}
                      key={todo.id}
                      >
                    {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
                    </NavLink> 
               )})}
     </div>
-              </div>
+              
   )
 }

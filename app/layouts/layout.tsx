@@ -29,7 +29,7 @@ export default function Layout({loaderData}: Route.ComponentProps) {
 			document.documentElement.setAttribute('data-theme',theme);
 	},[theme])
 	return (
-		<div className={`grid grid-rows-[100px_1fr_auto] min-h-screen`}>
+		<div className={`grid grid-rows-[100px_1fr_80px] min-h-screen`}>
 			<Header />
 				<Outlet />
 			<Footer />
