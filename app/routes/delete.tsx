@@ -32,14 +32,14 @@ export default function Delete({ loaderData }: Route.ComponentProps) {
     }
   }
   return (
-    <div className="flex flex-col items-center text-center gap-12 relative min-h-[40vh] max-w-prose">
+    <div className="flex flex-col items-center text-center gap-12 relative min-h-[40vh] w-full md:max-w-prose">
       <h1 className="text-xl md:text-2xl">
         Are you sure you want to delete todo <br />{" "}
         <span className="text-xl font-bold">{todo?.todo}</span>?{" "}
     
       </h1>
         <Form method="post"
-          className="absolute left-0 top-0 right-0 py-8 px-4 bg-slate-200 text-slate-900 border-4 border-double border-slate-200 min-h-[20vh] rounded-md flex flex-col items-center gap-8"
+          className="absolute left-0 top-0 right-0 py-8 px-4 bg-slate-200 text-slate-900 rounded-md flex flex-col items-center gap-8"
           hidden={hidden}
           onSubmit={handleSubmit}
         >
