@@ -1,6 +1,6 @@
 import { Form, NavLink, Outlet, redirect, useNavigation, useSubmit } from "react-router";
 import type { Route } from "../+types/root";
-import { createTodo, getAllTodos, getTodo, type TodoRecord } from "~/db";
+import { getAllTodos, type TodoRecord } from "~/db";
 import Content from "~/components/Content";
 import React, { useRef } from "react";
 
@@ -89,7 +89,6 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
               id="search-spinner"
             />
         </Form>
-       
      
           <TodoList todos={data?.todos} search={searchRef}  />
       </div>
@@ -105,16 +104,12 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
 }
 
 function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObject<HTMLInputElement>}) {
-  const list = search?.current?.value ? todos?.filter((todo) => todo.createdAt.includes(search?.current?.value) || todo.updatedAt?.includes(search?.current?.value)) as TodoRecord[] : todos;
-  const filteredListAfterUpdate = list!.filter((todo) =>!todo.updatedAt);
-  const displayList = list && search?.current?.value ? filteredListAfterUpdate.length < list.length ? filteredListAfterUpdate : list : todos;
+  const list = search?.current?.value && todos?.filter((todo) => todo.createdAt.includes(search?.current?.value) || todo.updatedAt?.includes(search?.current?.value)) as TodoRecord[];
+  const filteredListAfterUpdate = list && list?.filter((todo) =>!todo.updatedAt) as TodoRecord[];
+  const displayList = list && search?.current?.value ? filteredListAfterUpdate!.length < list.length ? filteredListAfterUpdate : list : todos as TodoRecord[];
   return (
-    <div>
-      <Form method='post' onSubmit={()=> console.log('submitted')}>
-        <input type="submit" value='Add New' className="p-2 mt-4 rounded bg-darkGreen text-primaryLight" />
-			</Form>
     <div className={`todos pt-8 max-w-lg flex flex-col gap-2 ${search?.current?.value ? 'block' : 'hidden md:block'}`}>
-      {displayList?.map((todo: TodoRecord) => {
+      {displayList && displayList.length > 0 && displayList?.map((todo: TodoRecord) => {
         //if updated show latest year in the url
         const year = Number(new Date(todo.updatedAt!).getFullYear()) > Number(new Date(todo.createdAt).getFullYear()) ? (new Date(todo.updatedAt!).getFullYear()).toString() : (new Date(todo.createdAt).getFullYear()).toString();
         return (
@@ -128,7 +123,6 @@ function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObje
                    {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
                    </NavLink> 
               )})}
-    </div>
     </div>
   )
 }
