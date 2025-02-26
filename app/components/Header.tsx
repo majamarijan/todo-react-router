@@ -9,15 +9,10 @@ export default function Header() {
 			<span className="font-mono text-xl">🗒️TX</span>
 			<nav className='flex-row hidden sm:flex items-center gap-4'>
 				<ul className='grid [grid-auto-columns:80px] grid-flow-col-dense items-center justify-start w-fit gap-2'>
-					<NavLink
-						className={({ isActive }: { isActive: boolean }) => {
-							return `${isActive && location.pathname === '/' || location.pathname.startsWith('/todo') ? 'bg-orange-400' : ''
-								} p-2 no-underline hover:font-bold  text-center rounded`;
-						}}
-						to='/'
-					>
-						Home
-					</NavLink>
+					
+					<Form method='post'>
+        <input type="submit" value='Add New' className="p-2 rounded font-bold bg-orange-600 text-primaryLight cursor-pointer" />
+			</Form>
 					
 				</ul>
 				<div className="py-2 relative w-[60px] flex items-center rounded-lg ">

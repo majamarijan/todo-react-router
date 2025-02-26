@@ -20,16 +20,7 @@ function formatDate(date: string) {
 		month: "long",
 		day: "numeric",
 	});
-}
-
-function sortTodos(todos: TodoRecord[]) {
-  return  todos?.sort((a,b)=> (
-    (!a.updatedAt && !b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 &&
-    (!a.updatedAt && b.updatedAt) && new Date(a.createdAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1 &&
-    (a.updatedAt && !b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.createdAt).toISOString() ? -1 : 1 && 
-    (a.updatedAt && b.updatedAt) && new Date(a.updatedAt).toISOString() > new Date(b.updatedAt).toISOString() ? -1 : 1
-  ));
-}
+} 
 
 export default function Dashboard({loaderData}: Route.ComponentProps) {
 	const data = loaderData as {todos:TodoRecord[], query?:string} | undefined;
@@ -38,11 +29,12 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
   const submit = useSubmit();
   const searching = navigation.location && new URLSearchParams(navigation.location.search).has('q');
   const searchRef = useRef(document.querySelector('input[name="q"]')) as React.RefObject<HTMLInputElement>;
-  const sortedTodos = sortTodos(data!.todos);
+  
   return (
     <div className={`grid px-4 sm:px-8 row-[2] grid-cols-1 md:grid-cols-[auto_1fr] w-full lg:w-5xl  mx-auto pt-12 pb-20 gap-8 place-items-center`}>
+
       <div className="px-4 sm:px-0 md:row-[1]">
-        <Form className="flex flex-row items-center relative" method="get"
+        <Form className="flex flex-row items-center relative mb-8" method="get"
         onSubmit={(e)=> {
           e.preventDefault();
           //check if the form is valid
@@ -97,13 +89,15 @@ export default function Dashboard({loaderData}: Route.ComponentProps) {
               id="search-spinner"
             />
         </Form>
-          <TodoList todos={sortedTodos} search={searchRef}  />
+       
+     
+          <TodoList todos={data?.todos} search={searchRef}  />
       </div>
       <Content>
         {navigation.state === "loading" ? <div className="loader"></div>
         :
         <Outlet />
-        
+    
 }
       </Content>
     </div>
@@ -128,13 +122,13 @@ function TodoList({todos, search}: {todos?: TodoRecord[], search?: React.RefObje
                 <NavLink
                 to={`/todo/${year}/${todo.id}`}
                      viewTransition
-                     className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded`}
+                     className={({ isActive }) => `${isActive ? "dark:bg-blue bg-blue/50 pointer-events-none" : ""} block p-2 rounded w-fit`}
                      key={todo.id}
                      >
                    {todo.updatedAt ? formatDate(todo.updatedAt) : formatDate(todo.createdAt!)}
                    </NavLink> 
               )})}
     </div>
-              </div>
+    </div>
   )
 }

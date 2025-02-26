@@ -22,7 +22,7 @@ export default function Todo({loaderData}:Route.ComponentProps) {
           
           <div className="flex gap-4">
             <NavLink to={`edit`} className="px-4 py-2 rounded bg-darkGreen text-primaryLight">Edit</NavLink>
-            <NavLink to={`delete`} className="px-4 py-2 rounded bg-red-700">Delete</NavLink>
+            <NavLink to={`delete`} className="px-4 py-2 rounded bg-red hover:bg-red/80 text-primaryLight">Delete</NavLink>
             </div>
               </>
             )}
