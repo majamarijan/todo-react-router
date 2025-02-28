@@ -11,7 +11,7 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({}: Route.LoaderArgs) {
 	const todos = await getAllTodos('');
-	return {todos};
+	return todos;
 }
 
 
@@ -19,10 +19,7 @@ export default function Home() {
 	const data = useLoaderData() as {todos:TodoRecord[]};
 	return (
 			<h1 className='text-xl sm:text-2xl md:text-3xl max-w-prose text-center'> 
-			<span className='hidden md:block md:max-w-md'>{
-				data?.todos.length <= 0 ? 'No Todos Found' :
-				`Welcome to Todo App made with React Router!! 💖`
-				}</span>
+			<span className='hidden md:block md:max-w-md'>{data?.todos.length <= 0 && 'No Todos Found'}</span>
 			<span className='md:hidden block'>Search for Todos</span></h1>
 	);
 }

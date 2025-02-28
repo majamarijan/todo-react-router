@@ -1,13 +1,18 @@
-import { sortTodos } from "./utils/utils";
+import { prismaClient } from "./db/index";
+import { generateDate, sortTodos } from "./utils/utils";
+
 
 export type TodoRecord = {
-	id: string;
+	id?: string;
 	todo: string;
 	completed: boolean;
-	createdAt:string;
-	updatedAt?: string;
+	createdAt: string;
+	updatedAt?: string | null;
 	priority: 'low' | 'medium' | 'high';
+	userId: number;
 };
+
+
 
 const todosDB = {
 	records: {} as Record<string, TodoRecord>,
@@ -24,7 +29,7 @@ const todosDB = {
 		if(todo) {
 			createdTodo = {...todo, id, createdAt: date};
 		}else {
-			const todo: TodoRecord = {todo: '', id: id, completed: false, priority: 'low', createdAt: date};
+			const todo: TodoRecord = {todo: '', id: id, completed: false, priority: 'low', createdAt: date, userId:1};
 			createdTodo = todo;
 		}
 			todosDB.records[id] = createdTodo;
@@ -88,6 +93,7 @@ export async function createTodo() {
 	return await todosDB.add();
 }
 
+
 export async function editTodo(id: string, todo: TodoRecord) {
 	return await todosDB.update(id, todo);
 }
@@ -98,15 +104,6 @@ export async function removeTodo(id:string) {
 }
 
 
-
-function generateDate() {
-	const randomDate = (start: Date, end: Date) => {
-		return new Date(
-			start.getTime() + Math.random() * (end.getTime() - start.getTime())
-		);
-	};
-	return randomDate(new Date(), new Date());
-}
 
 
 

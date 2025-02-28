@@ -1,4 +1,4 @@
-import { Form, NavLink, Outlet, redirect, useNavigation, useSubmit } from "react-router";
+import { Form, Outlet, useNavigation, useSubmit } from "react-router";
 import type { Route } from "../+types/root";
 import { getAllTodos, type TodoRecord } from "~/db";
 import Content from "~/components/Content";

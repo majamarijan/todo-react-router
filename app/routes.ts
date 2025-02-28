@@ -14,6 +14,7 @@ export default [
 				route('edit', 'routes/edit.tsx'),
 				route('delete', 'routes/delete.tsx'),
 			]),
+			route('user/profile', 'routes/profile.tsx'),
 		]),
 	]),
 ] satisfies RouteConfig;

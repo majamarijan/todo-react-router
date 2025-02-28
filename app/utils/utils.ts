@@ -17,3 +17,13 @@ export function formatDate(date: string) {
 		day: "numeric",
 	});
 } 
+
+
+export function generateDate() {
+	const randomDate = (start: Date, end: Date) => {
+		return new Date(
+			start.getTime() + Math.random() * (end.getTime() - start.getTime())
+		);
+	};
+	return randomDate(new Date(2018, 0, 1), new Date());
+}

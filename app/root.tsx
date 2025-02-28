@@ -6,12 +6,17 @@ import {
   redirect,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import ThemeProvider from "./context/themeContext";
 import { createTodo } from "./db";
+import { Auth0Provider } from "@auth0/auth0-react";
+
+
+
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,6 +30,7 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
 
 export async function action({ request }: Route.ActionArgs) {
   const todo = await createTodo();
@@ -51,9 +57,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
+    <Auth0Provider 
+    domain={import.meta.env.VITE_AUTH0_ISSUER_BASE_URL!}
+    clientId={import.meta.env.VITE_AUTH0_CLIENT_ID!}
+    authorizationParams={{redirect_uri: window.location.origin}}>
     <ThemeProvider>
       <Outlet />
     </ThemeProvider>
+    </Auth0Provider>
   )
 }
 

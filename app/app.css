@@ -31,7 +31,9 @@ body {
   nav a:hover {
     @apply bg-orange/80;
   }
-
+  nav .profile-link:hover {
+    @apply bg-slate-200/20;
+  }
   a {
     @apply no-underline cursor-pointer;
   }
@@ -77,4 +79,34 @@ body {
 }
       
 
-  
+.fadeIn {
+  animation: fadeIn ease-in-out .3s forwards;
+  -webkit-animation: fadeIn ease 1s;
+  -moz-animation: fadeIn ease 1s;
+  -o-animation: fadeIn ease 1s;
+  -ms-animation: fadeIn ease 1s;
+}
+@keyframes fadeIn {
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+.fadeOut {
+  animation: fadeOut ease-in-out .3s forwards;
+  -webkit-animation: fadeOut ease 1s;
+  -moz-animation: fadeOut ease 1s;
+  -o-animation: fadeOut ease 1s;
+  -ms-animation: fadeOut ease 1s;
+}
+@keyframes fadeOut {
+  0% {
+    opacity:1;
+  }
+  100% {
+    opacity:0;
+  }
+}

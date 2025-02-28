@@ -4,3 +4,10 @@
 # React Router
 /.react-router/
 /build/
+
+# package
+package-lock.json
+
+# env
+.env
+.venv
