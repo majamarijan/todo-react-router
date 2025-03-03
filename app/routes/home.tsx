@@ -11,7 +11,7 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({}: Route.LoaderArgs) {
 	const todos = await getAllTodos('');
-	return todos;
+	return {todos};
 }
 
 

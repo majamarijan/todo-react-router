@@ -1,6 +1,5 @@
 import DropdownMenu, { Profile } from "./DropdownMenu";
-import { useAuth0 } from "@auth0/auth0-react";
-import LoginButton from "./LoginButton";
+import LoginButton from "./Login";
 import AddTodo from "./AddTodoButton";
 import ThemeButton from "./ThemeButton";
 import { NavLink } from "react-router";
@@ -21,14 +20,11 @@ export default function Header() {
 }
 
 export function Navigation({noDropdown}: {noDropdown?: boolean}) {
-	const { isAuthenticated, isLoading } = useAuth0();
-  if(isLoading) {
-    return <ThemeButton />
-  }
+  
 	return (
         <nav className="flex flex-col sm:flex-row sm:items-center gap-4">
-        	{isAuthenticated && <AddTodo />}
-						{isAuthenticated ? noDropdown ? <Profile /> : <DropdownMenu />  : <LoginButton />}
+        	<AddTodo />
+						{ noDropdown ? <Profile /> : <DropdownMenu /> } <LoginButton />
           <ThemeButton />
         </nav>
 	)

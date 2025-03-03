@@ -19,6 +19,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 
 
 
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -31,6 +32,7 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
 
 
 export async function action({ request }: Route.ActionArgs) {
@@ -62,16 +64,9 @@ export default function App() {
   };
 
   return (
-    <Auth0Provider 
-    domain={import.meta.env.VITE_AUTH0_ISSUER_BASE_URL}
-    clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-    authorizationParams={{redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL}}
-    onRedirectCallback={onRedirectCallback}
-    >
     <ThemeProvider>
       <Outlet />
     </ThemeProvider>
-    </Auth0Provider>
   )
 }
 

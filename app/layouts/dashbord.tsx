@@ -6,8 +6,9 @@ import React, { useRef } from "react";
 import TodoList from "~/components/TodosList";
 
 
-
 export async function loader({params, request}: Route.LoaderArgs) {
+  const cookie = await request.headers.get('Cookie');
+  console.log(cookie);
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const data = await getAllTodos(q || '');
