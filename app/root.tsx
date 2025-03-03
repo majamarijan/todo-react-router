@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -36,7 +37,6 @@ export async function action({ request }: Route.ActionArgs) {
   const todo = await createTodo();
   return redirect(`/todo/${new Date(todo.createdAt).getFullYear()}/${todo.id}/edit`);
 }
-
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -56,11 +56,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const navigate = useNavigate();
+    const onRedirectCallback = (appState: any) => {
+    navigate(appState?.returnTo || window.location.pathname);
+  };
+
   return (
     <Auth0Provider 
-    domain={import.meta.env.VITE_AUTH0_ISSUER_BASE_URL!}
-    clientId={import.meta.env.VITE_AUTH0_CLIENT_ID!}
-    authorizationParams={{redirect_uri: window.location.origin}}>
+    domain={import.meta.env.VITE_AUTH0_ISSUER_BASE_URL}
+    clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+    authorizationParams={{redirect_uri: import.meta.env.VITE_AUTH0_CALLBACK_URL}}
+    onRedirectCallback={onRedirectCallback}
+    >
     <ThemeProvider>
       <Outlet />
     </ThemeProvider>

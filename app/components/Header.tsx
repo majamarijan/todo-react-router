@@ -21,7 +21,10 @@ export default function Header() {
 }
 
 export function Navigation({noDropdown}: {noDropdown?: boolean}) {
-	const { isAuthenticated } = useAuth0();
+	const { isAuthenticated, isLoading } = useAuth0();
+  if(isLoading) {
+    return <ThemeButton />
+  }
 	return (
         <nav className="flex flex-col sm:flex-row sm:items-center gap-4">
         	{isAuthenticated && <AddTodo />}

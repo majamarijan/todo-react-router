@@ -11,6 +11,11 @@ export default function User() {
           <p>{user.email}</p>
         </div>
       )}
+      {!isAuthenticated && (
+        <div>
+          <p>Not logged in. Please, log in.</p>
+        </div>
+      )}
     </div>
   );
 }
