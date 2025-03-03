@@ -8,17 +8,22 @@ datasource db {
 }
 
 model todos {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   completed Boolean
   createdAt String
-  priority  Priority  
+  priority  Priority
   todo      String
   userId    Int
   updatedAt String?
 }
 
 model users {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  username String
+  password String
+  image    String
+  email    String
+  user_id  Int    @unique
 }
 
 enum Priority {

@@ -8,17 +8,21 @@ export type TodoRecord = {
 	completed: boolean;
 	createdAt: string;
 	updatedAt?: string | null;
-	priority: 'low' | 'medium' | 'high';
+	priority: Priority | string;
 	userId: number;
 };
 
+export type Priority = 'low' | 'medium' | 'high';
 
 
 const todosDB = {
 	records: {} as Record<string, TodoRecord>,
 	async findAll(): Promise<TodoRecord[]> {
 		if(Object.keys(todosDB.records).length === 0) {
-			return [];
+			const todos=await prismaClient.todos.findMany();
+			todos.forEach(todo=> {
+				todosDB.records[todo.id] = todo;
+			})
 		}
 		return Object.keys(todosDB.records).map((key) => todosDB.records[key]);
 	},
@@ -103,6 +107,14 @@ export async function removeTodo(id:string) {
 	return await todosDB.delete(id);
 }
 
+
+export async function getUser({username, password}: {username: FormDataEntryValue | null, password: FormDataEntryValue | null}) {
+	const users = await prismaClient.users.findMany();
+	const user = users.find((user) => user.username === username && user.password === password);
+	if(user) {
+		return user;
+	}
+}
 
 
 

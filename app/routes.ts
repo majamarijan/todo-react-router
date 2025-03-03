@@ -9,6 +9,7 @@ export default [
 	layout('layouts/layout.tsx', [
 		layout('layouts/dashbord.tsx', [
 			index('routes/home.tsx'),
+			route('/login', 'routes/login.tsx'),
 			route('todo/:year/:id', 'routes/todo.tsx',
 			[
 				route('edit', 'routes/edit.tsx'),

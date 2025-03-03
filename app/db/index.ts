@@ -24,3 +24,13 @@ main().catch(async(e)=> {
 // 		console.log(updatedTodos)
 // //await prismaClient.todos.createMany({data: updatedTodos});
 // }
+
+
+// export async function createUsers() {
+//   const data = await fetch('https://dummyjson.com/users');
+//   const users = await data.json();
+//   const updateUsers = users.users.map((u:User) => {
+//     return {user_id: u.id, username: u.username, password: u.password, email: u.email, image: u.image}
+//   })
+//   return updateUsers;
+// }

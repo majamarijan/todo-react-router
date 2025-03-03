@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import LogoutButton from "./Logout";
 import { NavLink } from "react-router";
 import Dropdown from "./Dropdown";
