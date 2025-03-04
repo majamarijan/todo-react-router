@@ -20,33 +20,31 @@ export type User = {
 	image: string;
 	id?: string;
 }
-
+enum PriorityEnum {
+	LOW = 'low',
+	MEDIUM = 'medium',
+	HIGH = 'high'
+}
 export type Priority = 'low' | 'medium' | 'high';
 
 
 const todosDB = {
 	records: {} as Record<string, TodoRecord>,
-	async findAll(): Promise<TodoRecord[]> {
+	async findAll(id:number): Promise<TodoRecord[]> {
 		if(Object.keys(todosDB.records).length === 0) {
-			const todos=await prismaClient.todos.findMany();
+			const todos=await prismaClient.todos.findMany({where: {userId: id}});
 			todos.forEach(todo=> {
 				todosDB.records[todo.id] = todo;
 			})
 		}
 		return Object.keys(todosDB.records).map((key) => todosDB.records[key]);
 	},
-	async add(todo?: TodoRecord): Promise<TodoRecord> {
+	async add(userId:number): Promise<TodoRecord> {
 		const id = crypto.randomUUID();
 		const date = new Date().toString();
-		let createdTodo;
-		if(todo) {
-			createdTodo = {...todo, id, createdAt: date};
-		}else {
-			const todo: TodoRecord = {todo: '', id: id, completed: false, priority: 'low', createdAt: date, userId:1};
-			createdTodo = todo;
-		}
-			todosDB.records[id] = createdTodo;
-			return createdTodo;
+		const todo = {todo: '', id:id, completed: false, priority: 'low', createdAt: date, userId: userId};
+			todosDB.records[id] = todo;
+			return todo;
 	},
 	async find(id: string) {
 		if(Object.keys(todosDB.records).length === 0) {
@@ -60,17 +58,13 @@ const todosDB = {
 		}
 	},
 
-	async update(id:string, todo: TodoRecord) {
+	async update(userId:number, id:string, todo: TodoRecord) {
 		const oldTodo = await todosDB.find(id);
-		if(!oldTodo) {
-			throw new Error('Todo not found');
-		}else {
-			const updatedAt = generateDate().toString();
-			const newTodo = {...oldTodo, ...todo,  updatedAt};
-			todosDB.records[id] = newTodo;
-			return newTodo;
-		}
-	},
+		const updatedAt = generateDate().toString();
+		const	newTodo = {...oldTodo, ...todo,  updatedAt, userId: userId};
+		todosDB.records[id] = newTodo;
+		return newTodo;
+		},
 
 	async delete(id: string) {
 		const todo = todosDB.records[id];
@@ -82,9 +76,9 @@ const todosDB = {
 	}
 };
 
-export async function getAllTodos(q?:string) {
+export async function getAllTodos(id:number, q?:string) {
 	await new Promise((resolve) => setTimeout(resolve, 400));
-	const todos = await todosDB.findAll();
+	const todos = await todosDB.findAll(id);
 	if(todos.length > 0) {
 		const sortedTodos = sortTodos(todos);	
 	
@@ -97,18 +91,18 @@ export async function getAllTodos(q?:string) {
 	}
 }
 
-export async function getTodo(id: string) {
+export async function getTodo(id:string) {
 	await new Promise((resolve) => setTimeout(resolve, 600));
 	return await todosDB.find(id);	
 }
 
-export async function createTodo() {
-	return await todosDB.add();
+export async function createTodo(userId:number) {
+	return await todosDB.add(userId);
 }
 
 
-export async function editTodo(id: string, todo: TodoRecord) {
-	return await todosDB.update(id, todo);
+export async function editTodo(userId:number,id: string, todo: TodoRecord) {
+	return await todosDB.update(userId, id, todo);
 }
 
 export async function removeTodo(id:string) {

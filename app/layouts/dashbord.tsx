@@ -16,10 +16,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   if (session.get("userId")) {
     const id = session.get("userId");
-    console.log(id)
     const url = new URL(request.url);
     const q = url.searchParams.get("q");
-    const data = await getAllTodos(q || "");
+    const data = await getAllTodos(Number(id), q || "");
     return { todos: data, query: q };
   } else {
     return null;
@@ -29,7 +28,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const data = loaderData as Data | undefined;
   const {isAuthenticated} = useAuth();
-  console.log(isAuthenticated)
   const navigation = useNavigation();
   const year = new Date().getFullYear();
   const submit = useSubmit();

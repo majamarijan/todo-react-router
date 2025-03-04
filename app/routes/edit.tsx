@@ -1,6 +1,7 @@
 import { Form, useNavigate, redirect } from "react-router"
 import type { Route } from "../+types/root";
 import { editTodo, getTodo, type TodoRecord } from "../db";
+import { getSession } from "~/sessions.server";
 
 export async function loader({params}:Route.LoaderArgs) {
   const todo = await getTodo(params.id!);
@@ -13,14 +14,18 @@ export async function loader({params}:Route.LoaderArgs) {
 export async function action({params,request}:Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  
+  const session = await getSession(request.headers.get("Cookie"));
+  const userId = Number(session.get('userId'));
+
   if(!data.hasOwnProperty('completed')) {
       Object.assign(data, {completed: false});
   }else {
     Object.assign(data, {completed: true});
   }
-  const todo = await editTodo(params.id!, new Object(data) as TodoRecord);
-  return redirect(`/todo/${new Date(todo.updatedAt).getFullYear()}/${params.id}`);
+  if(session.get('userId')) {
+    const todo = await editTodo(userId, params.id!, new Object(data) as TodoRecord);
+    return redirect(`/todo/${new Date(todo.updatedAt).getFullYear()}/${params.id}`);
+  }
   
 }
 

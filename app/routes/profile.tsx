@@ -1,6 +1,6 @@
 import type { Route } from "../+types/root";
 import { commitSession, getSession } from "~/sessions.server";
-import { data, redirect } from "react-router";
+import { data } from "react-router";
 import { getUser, type User } from "~/db";
 import { useAuth, type AuthState } from "~/context/AuthProvider";
 import { useEffect } from "react";
