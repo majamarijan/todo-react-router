@@ -4,6 +4,7 @@ import AddTodo from "./AddTodoButton";
 import ThemeButton from "./ThemeButton";
 import { NavLink } from "react-router";
 import ToggleBars from "./ToggleBars";
+import { useAuth } from "~/context/AuthProvider";
 
 export default function Header() {
   return (
@@ -20,11 +21,13 @@ export default function Header() {
 }
 
 export function Navigation({noDropdown}: {noDropdown?: boolean}) {
-  
+  const {isAuthenticated} = useAuth();
+  console.log('isAuthenticated', isAuthenticated);
 	return (
         <nav className="flex flex-col sm:flex-row sm:items-center gap-4">
-        	<AddTodo />
-						{ noDropdown ? <Profile /> : <DropdownMenu /> } <LoginButton />
+        	{isAuthenticated && <AddTodo />}
+						{ isAuthenticated ? noDropdown ? <Profile /> : <DropdownMenu /> : <LoginButton />}
+            <NavLink className={`px-4 py-2 rounded text-slate-200 bg-slate-600`} to='/user/profile'>Profile</NavLink>
           <ThemeButton />
         </nav>
 	)

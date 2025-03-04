@@ -1,10 +1,10 @@
 import { createCookieSessionStorage } from "react-router";
 
-type SessionData = {
+export type SessionData = {
   userId: string;
 };
 
-type SessionFlashData = {
+export type SessionFlashData = {
   error: string;
 };
 
@@ -20,9 +20,10 @@ const { getSession, commitSession, destroySession } =
         // Expires can also be set (although maxAge overrides it when used in combination).
         // Note that this method is NOT recommended as `new Date` creates only one date on each server deployment, not a dynamic date in the future!
         //
-        expires: new Date(Date.now() + 60_000),
+       // expires: new Date(Date.now() + 60_000),
         httpOnly: true,
-        maxAge: 60,
+        //maxAge of 2minutes
+        maxAge: 60 * 2,
         path: "/",
         sameSite: "lax",
         secrets: ["s3cret1"],

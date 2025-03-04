@@ -6,15 +6,13 @@ import {
   redirect,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
-  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import ThemeProvider from "./context/themeContext";
 import { createTodo } from "./db";
-import { Auth0Provider } from "@auth0/auth0-react";
+import AuthProvider from "./context/AuthProvider";
 
 
 
@@ -58,15 +56,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const navigate = useNavigate();
-    const onRedirectCallback = (appState: any) => {
-    navigate(appState?.returnTo || window.location.pathname);
-  };
-
   return (
-    <ThemeProvider>
-      <Outlet />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <Outlet />
+      </ThemeProvider>
+    </AuthProvider>
   )
 }
 

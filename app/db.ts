@@ -12,6 +12,15 @@ export type TodoRecord = {
 	userId: number;
 };
 
+export type User = {
+	user_id?: number;
+	username: string;
+	password: string;
+	email: string;
+	image: string;
+	id?: string;
+}
+
 export type Priority = 'low' | 'medium' | 'high';
 
 
@@ -108,12 +117,21 @@ export async function removeTodo(id:string) {
 }
 
 
-export async function getUser({username, password}: {username: FormDataEntryValue | null, password: FormDataEntryValue | null}) {
-	const users = await prismaClient.users.findMany();
-	const user = users.find((user) => user.username === username && user.password === password);
-	if(user) {
-		return user;
+export async function getUserId({username, password}: {username: string, password: string}):Promise<{userId:string | undefined}> {
+	const user = await prismaClient.users.findFirst({
+		where: 
+		{username: username, password: password},
+		select: {
+			user_id: true
+		}
 	}
+	);
+	return {userId: String(user?.user_id)};
+}
+
+export async function getUser(id:string):Promise<User> {
+	const user = await prismaClient.users.findFirst({where: {user_id: Number(id)}}) as User;
+	return user;
 }
 
 

@@ -1,6 +1,9 @@
 import type { Route } from "../+types/root";
 import { commitSession, getSession } from "~/sessions.server";
 import { data, redirect } from "react-router";
+import { getUser, type User } from "~/db";
+import { useAuth, type SessionData } from "~/context/AuthProvider";
+import { useEffect } from "react";
 
 export async function loader({
   request,
@@ -8,10 +11,10 @@ export async function loader({
   const session = await getSession(
     request.headers.get("Cookie")
   );
-
   if (session.has("userId")) {
-    // Redirect to the home page if they are already signed in.
-    return {isAuthenticated: true};
+    const id:string | undefined = session.get("userId");
+    const user:User = await getUser(id!);
+    return {isAuthenticated: true, user:user};
   }
 
   return data(
@@ -25,19 +28,23 @@ export async function loader({
 }
 
 export default function User({loaderData}: Route.ComponentProps) {
-   const { isAuthenticated, user } = loaderData as any;
-   console.log(isAuthenticated, user);
+  const {isAuthenticated, user} = loaderData as unknown as SessionData;
+  console.log('isAuthenticated', isAuthenticated);
+  const {handleAuth} = useAuth();
+
+  useEffect(()=> {
+    handleAuth({isAuthenticated, user});
+  },[isAuthenticated,user]);
+  
   return (
     <div>
-      {isAuthenticated && user && (
-        <div>
-          <img src={user.picture} alt={user.name} />
-          <h2>{user.name}</h2>
-          <p>{user.email}</p>
-        </div>
-      )}
-     
-      {!isAuthenticated && <p>You're not logged in!</p>}
+      {!isAuthenticated ? <p>You're not logged in!</p> :
+      <div>
+        <img src={user?.image} alt={user?.username} />
+        <h2>{user?.username}</h2>
+        <p>{user?.email}</p>
+      </div>
+      }
     </div>
   );
 }

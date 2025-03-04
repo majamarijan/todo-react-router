@@ -1,16 +1,12 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import LogoutButton from "./Logout";
 import { NavLink } from "react-router";
 import Dropdown from "./Dropdown";
+import { useAuth } from "~/context/AuthProvider";
 
 export default function DropdownMenu() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
+  const { user, isAuthenticated } = useAuth();
   const [logout, setLogout] = useState(false);
-
-  if (isLoading) {
-    return ;
-  }
 
   return (
     isAuthenticated && (
@@ -18,12 +14,12 @@ export default function DropdownMenu() {
         className="relative flex flex-col rounded-full w-10 h-10 bg-slate-800 items-center justify-center cursor-pointer order-2"
         onClick={() => setLogout((prev) => !prev)}
       >
-        {user && user.picture ? (
+        {user && user.image ? (
           <img
-            src={user.picture}
-            alt={user.name}
+            src={user.image}
+            alt={user.username}
             className="rounded-full"
-            title={`${user.name} \n ${user.email}`}
+            title={`${user.username} \n ${user.email}`}
           />
         ) : (
           <svg
