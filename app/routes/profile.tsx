@@ -2,7 +2,7 @@ import type { Route } from "../+types/root";
 import { commitSession, getSession } from "~/sessions.server";
 import { data, redirect } from "react-router";
 import { getUser, type User } from "~/db";
-import { useAuth, type SessionData } from "~/context/AuthProvider";
+import { useAuth, type AuthState } from "~/context/AuthProvider";
 import { useEffect } from "react";
 
 export async function loader({
@@ -28,8 +28,7 @@ export async function loader({
 }
 
 export default function User({loaderData}: Route.ComponentProps) {
-  const {isAuthenticated, user} = loaderData as unknown as SessionData;
-  console.log('isAuthenticated', isAuthenticated);
+  const {isAuthenticated, user} = loaderData as unknown as AuthState;
   const {handleAuth} = useAuth();
 
   useEffect(()=> {
@@ -38,7 +37,7 @@ export default function User({loaderData}: Route.ComponentProps) {
   
   return (
     <div>
-      {!isAuthenticated ? <p>You're not logged in!</p> :
+      {!isAuthenticated ? <p>Please, log in.</p> :
       <div>
         <img src={user?.image} alt={user?.username} />
         <h2>{user?.username}</h2>

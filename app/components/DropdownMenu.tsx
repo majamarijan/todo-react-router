@@ -51,7 +51,7 @@ export function Profile() {
     <div className="flex flex-col items-stretch justify-start gap-3 order-3">
        <div className="sm:hidden block w-full h-[2px] bg-slate-600"></div>
       <NavLink
-              to={"/user/profile"}
+              to={`/user/profile`}
               className={
                 "profile-link flex flex-row items-center gap-2 rounded-md p-1 text-white transition-all ease-in-out duration-200"
               }

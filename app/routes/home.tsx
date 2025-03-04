@@ -1,6 +1,9 @@
-import { getAllTodos, type TodoRecord } from '~/db';
+import { useAuth } from '~/context/AuthProvider';
 import type { Route } from './+types/home';
+import { getSession } from '~/sessions.server';
 import { useLoaderData } from 'react-router';
+import { useEffect } from 'react';
+import { getUser, type User } from '~/db';
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -9,17 +12,31 @@ export function meta({}: Route.MetaArgs) {
 	];
 }
 
-export async function loader({}: Route.LoaderArgs) {
-	const todos = await getAllTodos('');
-	return {todos};
+export async function loader({request}: Route.LoaderArgs) {
+	const session = await getSession(
+    request.headers.get("Cookie")
+  );
+  if (!session.has("userId")) {
+		return {isAuthenticatedSession: false};
+	}else {
+		return {isAuthenticatedSession: true};
+	}
 }
 
 
 export default function Home() {
-	const data = useLoaderData() as {todos:TodoRecord[]};
+	const {isAuthenticatedSession} = useLoaderData() as {isAuthenticatedSession: boolean};
+	const {handleAuth} = useAuth();
+	
+	useEffect(()=> {
+		if(!isAuthenticatedSession) {
+			handleAuth({isAuthenticated: isAuthenticatedSession, user:undefined});
+		}
+	},[isAuthenticatedSession]);
+
 	return (
 			<h1 className='text-xl sm:text-2xl md:text-3xl max-w-prose text-center'> 
-			<span className='hidden md:block md:max-w-md'>{data?.todos.length <= 0 && 'No Todos Found'}</span>
-			<span className='md:hidden block'>Search for Todos</span></h1>
+				{isAuthenticatedSession ? 'Search Todos' : 'Welcome! Please, login to continue.'}
+			</h1>
 	);
 }

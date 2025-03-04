@@ -74,7 +74,7 @@ export default function Login({
       {error ? <div className="error">{error}</div> : null}
       <Form method="POST" className="flex flex-col gap-4 max-w-md">
         <div>
-          <p>Please sign in</p>
+          <p>Please sign in <span className="font-mono bg-orange-600 rounded-md test-slate-100 px-2 py-4">(username: test, password: test)</span></p>
         </div>
         <label className="flex flex-col sm:flex-row bg-slate-800 rounded p-4 gap-2">
           Username: <input type="text" name="username" className="text-black bg-slate-700 rounded-md" />

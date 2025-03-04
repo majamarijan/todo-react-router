@@ -11,7 +11,7 @@ export async function action({
   const session = await getSession(
     request.headers.get("Cookie")
   );
-  return redirect("/user/profile", {
+  return redirect("/", {
     headers: {
       "Set-Cookie": await destroySession(session),
     },
