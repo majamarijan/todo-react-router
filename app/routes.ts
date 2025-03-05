@@ -19,4 +19,5 @@ export default [
 			route('user/profile', 'routes/profile.tsx'),
 		]),
 	]),
+	route('*', 'routes/404.tsx'),
 ] satisfies RouteConfig;

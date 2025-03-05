@@ -26,11 +26,14 @@ export async function loader({request}: Route.LoaderArgs) {
 
 export default function Home() {
 	const {isAuthenticatedSession} = useLoaderData() as {isAuthenticatedSession: boolean};
-	const {handleAuth} = useAuth();
+	const {isAuthenticated, user, handleAuth} = useAuth();
+	console.log(isAuthenticated, isAuthenticatedSession)
 	
-	useEffect(()=> {
+	useEffect(()=> {	
 		if(!isAuthenticatedSession) {
-			handleAuth({isAuthenticated: isAuthenticatedSession, user:undefined});
+			handleAuth({isAuthenticated: isAuthenticatedSession, user:undefined});			
+		}else {
+			handleAuth({isAuthenticated: isAuthenticatedSession, user:user});
 		}
 	},[isAuthenticatedSession]);
 

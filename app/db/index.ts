@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import type { TodoRecord } from "~/db";
+import { formatDate, generateDate } from "~/utils/utils";
 
 export const prismaClient = new PrismaClient();
 
@@ -16,13 +18,13 @@ main().catch(async(e)=> {
 
 // const priority = ['low', 'medium', 'high'];
 // export async function createMany() {
-//   const data = await fetch('https://dummyjson.com/todos?limit=10');
+//   const data = await fetch('https://dummyjson.com/todos?limit=5');
 // 		const todos = await data.json();
 // 		const updatedTodos:TodoRecord[] = todos.todos.map((todo:TodoRecord) => {
 //       delete todo.id;
-//       return ({...todo, createdAt: formatDate(formatDate(String(generateDate()))), priority: priority[Math.floor(Math.random() * 3)], updatedAt: null})})
+//       return ({...todo, userId:1, createdAt: (formatDate(String(generateDate()))), priority: priority[Math.floor(Math.random() * 3)], updatedAt: null})})
 // 		console.log(updatedTodos)
-// //await prismaClient.todos.createMany({data: updatedTodos});
+// await prismaClient.todos.createMany({data: updatedTodos as any});
 // }
 
 

@@ -5,9 +5,6 @@ import { getSession } from "~/sessions.server";
 
 export async function loader({params}:Route.LoaderArgs) {
   const todo = await getTodo(params.id!);
-  if(!todo) {
-    throw new Response('Not Found', {status: 404});
-  }
   return todo;
 }
 
@@ -15,7 +12,7 @@ export async function action({params,request}:Route.ActionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = Number(session.get('userId'));
+  console.log(data)
 
   if(!data.hasOwnProperty('completed')) {
       Object.assign(data, {completed: false});
@@ -23,8 +20,8 @@ export async function action({params,request}:Route.ActionArgs) {
     Object.assign(data, {completed: true});
   }
   if(session.get('userId')) {
-    const todo = await editTodo(userId, params.id!, new Object(data) as TodoRecord);
-    return redirect(`/todo/${new Date(todo.updatedAt).getFullYear()}/${params.id}`);
+    const todo = await editTodo(Number(session.get('userId')), params.id!, new Object(data) as TodoRecord);
+   return redirect(`/todo/${new Date(todo.updatedAt ? todo.updatedAt : todo.createdAt).getFullYear()}/${todo.todoId}`);
   }
   
 }

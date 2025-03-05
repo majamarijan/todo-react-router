@@ -40,13 +40,13 @@ export async function action({
   const form = await request.formData();
   const username = form.get("username") as string;
   const password = form.get("password") as string;
-  const data:SessionData = await getUserId({
+  const data:SessionData | null = await getUserId({
     username,
     password
   });
 
   if (data == null) {
-    session.flash("error", "Invalid username/password");
+    session.flash("error", "Invalid username or password");
     // Redirect back to the login page with errors.
     return redirect("/login", {
       headers: {
@@ -54,7 +54,6 @@ export async function action({
       },
     });
   }
-
   session.set("userId", data.userId);
   // Login succeeded, send them to the profile page.
   return redirect("/user/profile", {
@@ -70,11 +69,11 @@ export default function Login({
   const { error } = loaderData as unknown as SessionFlashData;
 
   return (
-    <div>
-      {error ? <div className="error">{error}</div> : null}
+    <div className="flex flex-col gap-4">
+      {error ? <div className="rounded px-4 py-6 bg-red-700 test-slate-100 text-center">{error}</div> : null}
       <Form method="POST" className="flex flex-col gap-4 max-w-md">
         <div>
-          <p>Please sign in <span className="font-mono bg-orange-600 rounded-md test-slate-100 px-2 py-4">(username: test, password: test)</span></p>
+          <p>Please sign in <br /> <span className="font-mono">[username: test, password: test]</span></p>
         </div>
         <label className="flex flex-col sm:flex-row bg-slate-800 rounded p-4 gap-2">
           Username: <input type="text" name="username" className="text-black bg-slate-700 rounded-md" />

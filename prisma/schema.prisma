@@ -11,10 +11,11 @@ model todos {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   completed Boolean
   createdAt String
-  priority  Priority
+  priority  Priority @default(low)
   todo      String
   userId    Int
   updatedAt String?
+  todoId    String?
 }
 
 model users {
@@ -27,7 +28,7 @@ model users {
 }
 
 enum Priority {
-  LOW
-  MEDIUM
-  HIGH
+  low 
+  medium
+  high
 } 

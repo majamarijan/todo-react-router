@@ -5,25 +5,25 @@ import { useTheme } from '~/context/themeContext';
 import type { Route } from '../+types/root';
 import { useEffect } from 'react';
 
-export async function clientLoader({params}: Route.LoaderArgs) {
+export async function clientLoader({ params}: Route.ClientLoaderArgs) {
 	const localTheme = localStorage.getItem('theme');
-	return { localTheme };
+	return { localTheme};
 }
 
 clientLoader.hydrate = true as const;
 
 export default function Layout({loaderData}: Route.ComponentProps) {
 	const {theme, toggleTheme} = useTheme();
-	const currentTheme = useLoaderData();
+	const clientData = loaderData as unknown as {localTheme: string};
 	useEffect(()=> {
-		if(currentTheme.localTheme === 'dark') {
+		if(clientData.localTheme === 'dark') {
 			document.documentElement.setAttribute('data-theme', 'dark');
 			toggleTheme('dark');
 		}else {
-			document.documentElement.setAttribute('data-theme','light')
+				document.documentElement.setAttribute('data-theme','light')
  			toggleTheme('light');
 		}
-	},[]);
+	},[clientData]);
 	useEffect(()=> {
 			localStorage.setItem('theme', theme);
 			document.documentElement.setAttribute('data-theme',theme);

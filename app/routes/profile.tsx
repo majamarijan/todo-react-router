@@ -11,6 +11,7 @@ export async function loader({
   const session = await getSession(
     request.headers.get("Cookie")
   );
+  if(!session.has('userId')) return {isAuthenticated: false};
   if (session.has("userId")) {
     const id:string | undefined = session.get("userId");
     const user:User = await getUser(id!);
@@ -30,14 +31,13 @@ export async function loader({
 export default function User({loaderData}: Route.ComponentProps) {
   const {isAuthenticated, user} = loaderData as unknown as AuthState;
   const {handleAuth} = useAuth();
-
   useEffect(()=> {
     handleAuth({isAuthenticated, user});
   },[isAuthenticated,user]);
   
   return (
     <div>
-      {!isAuthenticated ? <p>Please, log in.</p> :
+      {!isAuthenticated ? <p>You are not logged in. Please, log in.</p> :
       <div>
         <img src={user?.image} alt={user?.username} />
         <h2>{user?.username}</h2>

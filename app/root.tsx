@@ -14,7 +14,6 @@ import ThemeProvider from "./context/themeContext";
 import { createTodo } from "./db";
 import AuthProvider from "./context/AuthProvider";
 import { getSession } from "./sessions.server";
-import { use } from "react";
 
 
 
@@ -34,13 +33,12 @@ export const links: Route.LinksFunction = () => [
 ];
 
 
-
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("userId");
-  if (userId){
-    const todo = await createTodo(Number(userId));
-    return redirect(`/todo/${new Date(todo.createdAt).getFullYear()}/${todo.id}/edit`);
+  if(session.get('userId')){
+   const todo = await createTodo();
+   console.log(todo)
+    return redirect(`/todo/${new Date(todo.createdAt).getFullYear()}/${todo.todoId}/edit`);
   }
 }
 export function Layout({ children }: { children: React.ReactNode }) {

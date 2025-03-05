@@ -10,7 +10,7 @@ import { useAuth } from "~/context/AuthProvider";
 type Data = {
   todos: TodoRecord[];
   query: string;
-};
+} | null;
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -39,10 +39,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   ) as React.RefObject<HTMLInputElement>;
 
   return (
+   <div>
     <div
       className={`grid px-4 sm:px-8 row-[2] grid-cols-1 w-full lg:w-5xl  mx-auto pt-12 pb-20 gap-8 place-items-center transition-all linear duration-300 ${!isAuthenticated ? 'md:grid-cols-1': 'md:grid-cols-[auto_1fr]'}`}
     >
       {isAuthenticated && <div className="px-4 sm:px-0 md:row-[1]">
+      <h1>Dashboard <br />isAuthenticated: {isAuthenticated.toString()}</h1>
         <Form
           className="flex flex-row items-center relative mb-8"
           method="get"
@@ -97,7 +99,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           <div aria-hidden hidden={!searching} id="search-spinner" />
         </Form>
 
-        {data?.todos && <TodoList todos={data?.todos} search={searchRef} />}
+        {data && data?.todos && <TodoList todos={data?.todos} search={searchRef} />}
       </div>}
       <Content>
         {navigation.state === "loading" ? (
@@ -106,6 +108,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           <Outlet />
         )}
       </Content>
+    </div>
     </div>
   );
 }
