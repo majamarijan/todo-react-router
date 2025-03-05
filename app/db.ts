@@ -10,11 +10,12 @@ export type TodoRecord = {
 	updatedAt?: string | null;
 	priority: Priority;
 	userId: string;
+	recordId? :string;
 };
 
 export type User = {
 	username: string;
-	password: string;
+	password?: string;
 	email: string;
 	image: string;
 	id: string;
@@ -24,60 +25,71 @@ export type User = {
 type Priority = 'low' | 'medium' | 'high';
 
 
-// const todosDB = {
-// 	records: {} as Record<string, TodoRecord>,
-// 	async findAll(id?:number): Promise<TodoRecord[]> {
-// 		if(Object.keys(todosDB.records).length <= 0) {
-// 			console.log('records are empty');
-// 			// fetch todos from DB if records are empty
-// 			console.log('fetching todos');
-// 			const todos=await prismaClient.todos.findMany({where: {userId: id}});
-// 			if(todos.length > 0) {
-// 				todos.forEach(todo=> {
-// 				todosDB.records[todo.id] = todo;
-// 			});
-// 		}
-// 	}
-// 		return Object.keys(todosDB.records).map((key) => todosDB.records[key]);
-// 	},
-// 	async add(): Promise<TodoRecord> {
-// 		const id = crypto.randomUUID();
-// 		const date = new Date().toString();
-// 		const todo:TodoRecord = {todo: '', todoId:id, completed: false, priority:'low', createdAt: date, updatedAt: null, userId:1};
-// 		todosDB.records[id] = todo;
-// 		return todo;
-// 	},
+const todosDB = {
+	records: {} as Record<string, TodoRecord>,
+	async findAll(id?:string): Promise<TodoRecord[]> {
+		if(Object.keys(todosDB.records).length <= 0) {
+			console.log('records are empty');
+			// fetch todos from DB if records are empty
+			console.log('fetching todos');
+			todosDB.records = {};
+			const todos=await prismaClient.todo.findMany({where: {userId: id}});
+			if(todos.length > 0) {
+				todos.forEach(todo=> {
+				const _id = crypto.randomUUID();
+				todosDB.records[_id] = todo;
+			});
+		}
+	}
+		return Object.keys(todosDB.records).map((key) => todosDB.records[key]);
+	},
 
-// 	async find(id: string) {
-// 		if(Object.keys(todosDB.records).length === 0) {
-// 			return {};
-// 		}
-// 		const todo = todosDB.records[id];
-// 		return todo;
-// 	},
+	async add(userId:string): Promise<TodoRecord> {
+		const id = crypto.randomUUID();
+		const date = new Date().toString();
+		const newTodo = {todo:'', completed: false, priority: 'low', createdAt: date, updatedAt: null, userId: userId} as TodoRecord;
+		todosDB.records[id] = newTodo;
+		return newTodo;
+	},
 
-// 	async update(userId:number, id:string, todo: TodoRecord) {
-// 		const oldTodo:TodoRecord | {} = await todosDB.find(id);
-// 		const updatedAt = generateDate().toString();
-// 		const	newTodo:TodoRecord = {...oldTodo, ...todo, updatedAt, userId: userId, todoId: id};
-// 		todosDB.records[id] = newTodo;
-// 		return newTodo;
-// 		},
+	async find(id: string) {
+		if(Object.keys(todosDB.records).length === 0) {
+			return {};
+		}
+		const todo = Object.values(todosDB.records).find((todo) => todo.id === id);
+		return todo;
+	},
 
-// 	async delete(id: string) {
-// 		const todo = todosDB.records[id];
-// 		if(!todo) {
-// 			throw new Error('Todo not found');
-// 	}
-// 		delete todosDB.records[id];
-// 		return null;
-// 	}
-// };
+	async update(userId:string, id:string, obj: TodoRecord) {
+		const todo:TodoRecord | undefined | {} = await todosDB.find(id);
+		const recordId = Object.keys(todosDB.records).find((key) => todosDB.records[key].id === id);
+			const updatedDate = new Date().toString();
+			if(todo) {
+				const newTodo = {...todo,...obj, userId: userId, updatedAt: updatedDate};
+				todosDB.records[recordId as string] = newTodo;
+				newTodo.id = id;
+				return newTodo;
+			}else {
+				return null;
+			}
+		},
+
+	async delete(id: string) {
+		const todo = Object.values(todosDB.records).find((t) => t.id === id);
+		const recordID = Object.keys(todosDB.records).find((key) => todosDB.records[key].id === id);
+		if(!todo){
+			throw new Error('Todo not found');
+		}
+		delete todosDB.records[recordID as string];
+		return null;
+	}
+};
 
 export async function getAllTodos(id:string,q?:string) {
 	await new Promise((resolve) => setTimeout(resolve, 400));
-	//const todos = await todosDB.findAll(userId);
-	const todos = await prismaClient.todo.findMany({where: {userId: id}});
+	const todos = await todosDB.findAll(id);
+	console.log(todosDB.records)
+	//const todos = await prismaClient.todo.findMany({where: {userId: id}});
 	if(todos.length > 0) {
 		const sortedTodos = sortTodos(todos);	
 	
@@ -92,38 +104,39 @@ export async function getAllTodos(id:string,q?:string) {
 
 export async function getTodo(id:string) {
 	await new Promise((resolve) => setTimeout(resolve, 600));
-	//return await todosDB.find(id);	
 	if(id === undefined) return null;
-	const todo = await prismaClient.todo.findFirst({where: {id: id}}) as TodoRecord | null;
-	return todo;
+	return await todosDB.find(id);	
+	
+	// const todo = await prismaClient.todo.findFirst({where: {id: id}}) as TodoRecord | null;
+	// return todo;
 }
 
 export async function createTodo(userId:string) {
-	//return await todosDB.add();
-	const newTodo = {todo:'', completed: false, priority: 'low', createdAt: new Date().toString(), updatedAt: null, userId: userId} as TodoRecord;
-	const todo = await prismaClient.todo.create({data: newTodo}) as TodoRecord;
-	return todo;
+	return await todosDB.add(userId);
+	// const newTodo = {todo:'', completed: false, priority: 'low', createdAt: new Date().toString(), updatedAt: null, userId: userId} as TodoRecord;
+	// const todo = await prismaClient.todo.create({data: newTodo}) as TodoRecord;
+	// return todo;
 }
 
 
 export async function editTodo(userId:string,id: string, obj: TodoRecord) {
-	//return await todosDB.update(userId, id, todo);
-	const todo = await prismaClient.todo.findFirst({where: {id: id, userId: userId}, omit: {id: true}}) as TodoRecord | null;
-	const updatedDate = new Date().toString();
-	if(todo) {
-		const newTodo = {...todo,...obj, updatedAt: updatedDate};
-		const updatedTodo = await prismaClient.todo.update({where: {id: id}, data: newTodo}) as TodoRecord;
-		updatedTodo.id = id;
-		return updatedTodo;
-	}else {
-		return null;
-	}
+	return await todosDB.update(userId, id, obj);
+	// const todo = await prismaClient.todo.findFirst({where: {id: id, userId: userId}, omit: {id: true}}) as TodoRecord | null;
+	// const updatedDate = new Date().toString();
+	// if(todo) {
+	// 	const newTodo = {...todo,...obj, updatedAt: updatedDate};
+	// 	const updatedTodo = await prismaClient.todo.update({where: {id: id}, data: newTodo}) as TodoRecord;
+	// 	updatedTodo.id = id;
+	// 	return updatedTodo;
+	// }else {
+	// 	return null;
+	// }
 }
 
 export async function removeTodo(id:string) {
 	await new Promise((resolve) => setTimeout(resolve, 300));
-	return  await prismaClient.todo.delete({where: {id: id}});
-	// return await todosDB.delete(id);
+	//return  await prismaClient.todo.delete({where: {id: id}});
+	return await todosDB.delete(id);
 }
 
 
@@ -143,7 +156,7 @@ export async function getUserId({username, password}: {username: string, passwor
 }
 
 export async function getUser(id:string):Promise<User> {
-	const user = await prismaClient.user.findFirst({where: {id: id}}) as User;
+	const user = await prismaClient.user.findFirst({where: {id: id}, omit: {password: true}}) as User;
 	if(!user) {
 		throw new Error('User not found');
 	}
