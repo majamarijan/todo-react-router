@@ -10,9 +10,9 @@ export async function loader({params}:Route.LoaderArgs) {
 
 export async function action({params,request}:Route.ActionArgs) {
   const formData = await request.formData();
+  const todoData = await getTodo(params.id!);
   const data = Object.fromEntries(formData);
   const session = await getSession(request.headers.get("Cookie"));
-  console.log(data)
 
   if(!data.hasOwnProperty('completed')) {
       Object.assign(data, {completed: false});
@@ -20,8 +20,10 @@ export async function action({params,request}:Route.ActionArgs) {
     Object.assign(data, {completed: true});
   }
   if(session.get('userId')) {
-    const todo = await editTodo(Number(session.get('userId')), params.id!, new Object(data) as TodoRecord);
-   return redirect(`/todo/${new Date(todo.updatedAt ? todo.updatedAt : todo.createdAt).getFullYear()}/${todo.todoId}`);
+    const updateTodo = {...todoData, ...data};
+    delete updateTodo.id;
+    const todo = await editTodo(Number(session.get('userId')), params.id!, new Object(updateTodo) as TodoRecord);
+ return redirect(`/todo/${new Date(todo.updatedAt ? todo.updatedAt : todo.createdAt).getFullYear()}/${todo.id}`);
   }
   
 }
@@ -29,14 +31,13 @@ export async function action({params,request}:Route.ActionArgs) {
 export default function Edit({loaderData}:Route.ComponentProps) {
   const navigate = useNavigate();
   const data = loaderData as TodoRecord | undefined;
+ 
   return (
     <div className="md:pt-14">
       
-        {data && (
+        {data ? (
           <Form className="flex flex-col gap-4 border border-slate-400/40 shadow-[0_0_12px_rgba(200,200,200,.4)] shadow-primaryLight rounded p-4 max-w-prose"
-            method="post"
-            onSubmit={()=> console.log('submitted')}
-          >
+            method="post">
             <div>
             <label htmlFor="completed">Completed: </label>
              <input type='checkbox' defaultValue={data.completed ? 'on' : ''} name='completed' className="place-self-start ml-2" id='completed' /> 
@@ -56,7 +57,7 @@ export default function Edit({loaderData}:Route.ComponentProps) {
       <button className="px-4 py-2 rounded text-slate-200 bg-slate-600" onClick={() => navigate(-1)}>Cancel</button>
       </div>
           </Form>
-        )}
+        ) : "No todo found"}
     </div>
   )
 }

@@ -12,6 +12,7 @@ export default function Todo({loaderData}:Route.ComponentProps) {
   const location = useLocation();
   return (
     <div>
+      {!todo && <p>Todo not found</p>}
       {
        todo && (
           <div className="flex flex-col gap-4">

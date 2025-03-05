@@ -38,6 +38,8 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     document.querySelector('input[name="q"]')
   ) as React.RefObject<HTMLInputElement>;
 
+  console.log(data?.todos.map(t=> t.id))
+
   return (
    <div>
     <div

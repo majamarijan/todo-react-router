@@ -13,8 +13,9 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 export async function action({params, request}:Route.ActionArgs) {
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-  await removeTodo(Object(data.id!));
+  const id = formData.get('id');
+  if(id !== params.id) return null;
+  await removeTodo(id);
   return redirect(`/`);
 }
 
@@ -43,7 +44,7 @@ export default function Delete({ loaderData }: Route.ComponentProps) {
           hidden={hidden}
           onSubmit={handleSubmit}
         >
-         <label htmlFor="todoId">Please comfirm delete with the todo ID: <br /><span className="font-mono bg-slate-300 text-slate-800" onClick={()=> navigator.clipboard.writeText(todo?.id || '')}>
+         <label htmlFor="todoId">Please copy or click on ID and paste below: <br /><span className="font-mono bg-slate-300 text-slate-800" onClick={()=> navigator.clipboard.writeText(todo?.id || '')}>
           {todo?.id}
         </span></label>
         <div className={`${wrongID ? 'flex' : 'hidden'} text-red-700`}>You entered worong ID!</div>

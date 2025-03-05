@@ -1,3 +1,4 @@
+import type { T } from "node_modules/react-router/dist/development/route-data-Cq_b5feC.mjs";
 import { prismaClient } from "./db/index";
 import { formatDate, generateDate, sortTodos } from "./utils/utils";
 
@@ -9,7 +10,7 @@ export type TodoRecord = {
 	createdAt: string;
 	updatedAt?: string | null;
 	priority: Priority;
-	userId?: number;
+	userId: number;
 	todoId?: string | null;
 };
 
@@ -29,6 +30,7 @@ const todosDB = {
 	records: {} as Record<string, TodoRecord>,
 	async findAll(id?:number): Promise<TodoRecord[]> {
 		if(Object.keys(todosDB.records).length <= 0) {
+			console.log('records are empty');
 			// fetch todos from DB if records are empty
 			console.log('fetching todos');
 			const todos=await prismaClient.todos.findMany({where: {userId: id}});
@@ -43,13 +45,12 @@ const todosDB = {
 	async add(): Promise<TodoRecord> {
 		const id = crypto.randomUUID();
 		const date = new Date().toString();
-		const todo:TodoRecord = {todo: '', todoId:id, completed: false, priority:'low', createdAt: date, updatedAt: null};
+		const todo:TodoRecord = {todo: '', todoId:id, completed: false, priority:'low', createdAt: date, updatedAt: null, userId:1};
 		todosDB.records[id] = todo;
 		return todo;
 	},
 
 	async find(id: string) {
-		console.log(id)
 		if(Object.keys(todosDB.records).length === 0) {
 			return {};
 		}
@@ -60,14 +61,8 @@ const todosDB = {
 	async update(userId:number, id:string, todo: TodoRecord) {
 		const oldTodo:TodoRecord | {} = await todosDB.find(id);
 		const updatedAt = generateDate().toString();
-		const	newTodo:TodoRecord = {...oldTodo, ...todo, updatedAt, userId: userId};
+		const	newTodo:TodoRecord = {...oldTodo, ...todo, updatedAt, userId: userId, todoId: id};
 		todosDB.records[id] = newTodo;
-		console.log(newTodo)
-		const findTodo = await prismaClient.todos.findFirst({where: {todoId: id}}) as TodoRecord;
-		console.log(findTodo)
-		if(!findTodo) {
-			//await prismaClient.todos.create({data: newTodo});
-		}
 		return newTodo;
 		},
 
@@ -81,11 +76,13 @@ const todosDB = {
 	}
 };
 
-export async function getAllTodos(id?:number, q?:string) {
+export async function getAllTodos(userId:number,q?:string) {
 	await new Promise((resolve) => setTimeout(resolve, 400));
-	const todos = await todosDB.findAll(id);
+	//const todos = await todosDB.findAll(userId);
+	const todos = await prismaClient.todos.findMany({where: {userId: userId}});
+	const todosByDates = todos.map(t=> ({...t,createdAt: new Date(t.createdAt).toDateString()}));
 	if(todos.length > 0) {
-		const sortedTodos = sortTodos(todos);	
+		const sortedTodos = sortTodos(todosByDates);	
 	
 	if (q) {
 		return sortedTodos.filter((todo) => todo.createdAt.includes(q.toLowerCase()) || todo.updatedAt?.includes(q.toLowerCase()));
@@ -98,21 +95,34 @@ export async function getAllTodos(id?:number, q?:string) {
 
 export async function getTodo(id:string) {
 	await new Promise((resolve) => setTimeout(resolve, 600));
-	return await todosDB.find(id);	
+	//return await todosDB.find(id);	
+	if(id === undefined) return null;
+	const todo = await prismaClient.todos.findFirst({where: {id: id}}) as TodoRecord | null;
+	return todo;
 }
 
-export async function createTodo() {
-	return await todosDB.add();
+export async function createTodo(userId:number) {
+	//return await todosDB.add();
+	const newTodo = {todo:'', todoId: crypto.randomUUID(), completed: false, priority: 'low', createdAt: formatDate(new Date().toString()), updatedAt: null, userId: userId} as TodoRecord;
+	const todo = await prismaClient.todos.create({data: newTodo}) as TodoRecord;
+	return todo;
 }
 
 
-export async function editTodo(userId:number,id: string, todo: TodoRecord) {
-	return await todosDB.update(userId, id, todo);
+export async function editTodo(userId:number,id: string, obj: TodoRecord) {
+	// return await todosDB.update(userId, id, todo);
+	const todo = await prismaClient.todos.findFirst({where: {id: id, userId: userId}});
+	const updatedDate = formatDate(new Date().toString());
+	const newTodo = {...obj, updatedAt: updatedDate};
+	const updatedTodo = await prismaClient.todos.update({where: {id: id}, data: newTodo}) as TodoRecord;
+	updatedTodo.id = id;
+	return updatedTodo;
 }
 
 export async function removeTodo(id:string) {
 	await new Promise((resolve) => setTimeout(resolve, 300));
-	return await todosDB.delete(id);
+	return  await prismaClient.todos.delete({where: {id: id}});
+	// return await todosDB.delete(id);
 }
 
 
