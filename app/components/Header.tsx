@@ -21,11 +21,11 @@ export default function Header() {
 }
 
 export function Navigation({noDropdown}: {noDropdown?: boolean}) {
-  const {isAuthenticated} = useAuth();
+  const {isAuthenticated, user} = useAuth();
 	return (
         <nav className="flex flex-col sm:flex-row sm:items-center gap-4">
         	{isAuthenticated && <AddTodo />}
-						{ isAuthenticated ? noDropdown ? <Profile /> : <DropdownMenu /> : <LoginButton />}
+						{ isAuthenticated ? noDropdown ? <Profile userId={user?.id} /> : <DropdownMenu /> : <LoginButton />}
           <ThemeButton />
         </nav>
 	)

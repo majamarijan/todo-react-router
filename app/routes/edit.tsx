@@ -10,7 +10,6 @@ export async function loader({params}:Route.LoaderArgs) {
 
 export async function action({params,request}:Route.ActionArgs) {
   const formData = await request.formData();
-  const todoData = await getTodo(params.id!);
   const data = Object.fromEntries(formData);
   const session = await getSession(request.headers.get("Cookie"));
 
@@ -20,9 +19,8 @@ export async function action({params,request}:Route.ActionArgs) {
     Object.assign(data, {completed: true});
   }
   if(session.get('userId')) {
-    const updateTodo = {...todoData, ...data};
-    delete updateTodo.id;
-    const todo = await editTodo(Number(session.get('userId')), params.id!, new Object(updateTodo) as TodoRecord);
+    const todo = await editTodo(session.get('userId') as string, params.id!, new Object(data) as TodoRecord);
+    if(!todo) return null;
  return redirect(`/todo/${new Date(todo.updatedAt ? todo.updatedAt : todo.createdAt).getFullYear()}/${todo.id}`);
   }
   

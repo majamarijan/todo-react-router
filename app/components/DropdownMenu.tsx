@@ -14,7 +14,7 @@ export default function DropdownMenu() {
         className="relative flex flex-col rounded-full w-10 h-10 bg-slate-800 items-center justify-center cursor-pointer order-2"
         onClick={() => setLogout((prev) => !prev)}
       >
-        {user && user.image ? (
+        {user ? (
           <img
             src={user.image}
             alt={user.username}
@@ -38,7 +38,7 @@ export default function DropdownMenu() {
           </svg>
         )}
           <Dropdown toggle={logout}>
-            <Profile />
+            <Profile userId={user?.id} />
           </Dropdown>
         
       </div>
@@ -46,12 +46,12 @@ export default function DropdownMenu() {
   );
 };
 
-export function Profile() {
+export function Profile({userId}: {userId: string | undefined}) {
   return (
     <div className="flex flex-col items-stretch justify-start gap-3 order-3">
        <div className="sm:hidden block w-full h-[2px] bg-slate-600"></div>
       <NavLink
-              to={`/user/profile`}
+              to={`/user/${userId}`}
               className={
                 "profile-link flex flex-row items-center gap-2 rounded-md p-1 text-white transition-all ease-in-out duration-200"
               }

@@ -3,7 +3,6 @@ import type { Route } from './+types/home';
 import { getSession } from '~/sessions.server';
 import { useLoaderData } from 'react-router';
 import { useEffect } from 'react';
-import { getUser, type User } from '~/db';
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -27,7 +26,6 @@ export async function loader({request}: Route.LoaderArgs) {
 export default function Home() {
 	const {isAuthenticatedSession} = useLoaderData() as {isAuthenticatedSession: boolean};
 	const {isAuthenticated, user, handleAuth} = useAuth();
-	console.log(isAuthenticated, isAuthenticatedSession)
 	
 	useEffect(()=> {	
 		if(!isAuthenticatedSession) {

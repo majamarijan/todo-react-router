@@ -17,7 +17,7 @@ export async function loader({
 
   if (session.has("userId")) {
     // Redirect to the profile page if they are already signed in.
-    return redirect("/user/profile");
+    return redirect(`/user/${session.get("userId")}`);
   }
 
   return data(
@@ -56,7 +56,7 @@ export async function action({
   }
   session.set("userId", data.userId);
   // Login succeeded, send them to the profile page.
-  return redirect("/user/profile", {
+  return redirect(`/user/${data.userId}`, {
     headers: {
       "Set-Cookie": await commitSession(session),
     },

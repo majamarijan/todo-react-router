@@ -1,15 +1,18 @@
 import { Form, Outlet, redirect, useNavigation, useSubmit } from "react-router";
 import type { Route } from "../+types/root";
-import { getAllTodos, type TodoRecord } from "~/db";
+import { getAllTodos, getUser, type TodoRecord } from "~/db";
 import Content from "~/components/Content";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import TodoList from "~/components/TodosList";
 import { getSession } from "~/sessions.server";
 import { useAuth } from "~/context/AuthProvider";
+import type { User } from "~/db";
+import { formatDate } from "~/utils/utils";
 
 type Data = {
   todos: TodoRecord[];
   query: string;
+  user: User
 } | null;
 
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -18,8 +21,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     const id = session.get("userId");
     const url = new URL(request.url);
     const q = url.searchParams.get("q");
-    const data = await getAllTodos(Number(id), q || "");
-    return { todos: data, query: q };
+    const user = await getUser(id!);
+    const data = await getAllTodos(id!, q || "");
+    return { todos: data, user:user, query: q };
   } else {
     return null;
   }
@@ -27,7 +31,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const data = loaderData as Data | undefined;
-  const {isAuthenticated} = useAuth();
+  const {isAuthenticated, handleAuth} = useAuth();
   const navigation = useNavigation();
   const year = new Date().getFullYear();
   const submit = useSubmit();
@@ -38,7 +42,11 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     document.querySelector('input[name="q"]')
   ) as React.RefObject<HTMLInputElement>;
 
-  console.log(data?.todos.map(t=> t.id))
+  useEffect(() => {
+    if(data?.todos) {
+      handleAuth({isAuthenticated: true, user: data.user});
+    }
+  }, [data])
 
   return (
    <div>
@@ -46,7 +54,6 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
       className={`grid px-4 sm:px-8 row-[2] grid-cols-1 w-full lg:w-5xl  mx-auto pt-12 pb-20 gap-8 place-items-center transition-all linear duration-300 ${!isAuthenticated ? 'md:grid-cols-1': 'md:grid-cols-[auto_1fr]'}`}
     >
       {isAuthenticated && <div className="px-4 sm:px-0 md:row-[1]">
-      <h1>Dashboard <br />isAuthenticated: {isAuthenticated.toString()}</h1>
         <Form
           className="flex flex-row items-center relative mb-8"
           method="get"

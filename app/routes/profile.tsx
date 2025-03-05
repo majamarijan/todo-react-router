@@ -6,15 +6,16 @@ import { useAuth, type AuthState } from "~/context/AuthProvider";
 import { useEffect } from "react";
 
 export async function loader({
-  request,
+  request, params
 }: Route.LoaderArgs) {
   const session = await getSession(
     request.headers.get("Cookie")
   );
-  if(!session.has('userId')) return {isAuthenticated: false};
+  // console.log('Profile route = ', session.get('userId'))
+  if(!session.has('userId') || params.id !== session.get('userId')) return {isAuthenticated: false};
   if (session.has("userId")) {
     const id:string | undefined = session.get("userId");
-    const user:User = await getUser(id!);
+   const user:User = await getUser(id!);
     return {isAuthenticated: true, user:user};
   }
 

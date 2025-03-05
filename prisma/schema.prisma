@@ -7,28 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model todos {
+model Todo {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   completed Boolean
   createdAt String
   priority  Priority @default(low)
   todo      String
-  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
   updatedAt String?
-  todoId    String?
 }
 
-model users {
+model User {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   username String
   password String
   image    String
   email    String
-  user_id  Int    @unique
+  todos    Todo[]
 }
 
 enum Priority {
-  low 
+  low
   medium
   high
-} 
+}

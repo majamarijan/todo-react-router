@@ -36,8 +36,7 @@ export const links: Route.LinksFunction = () => [
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   if(session.get('userId')){
-   const todo = await createTodo(Number(session.get('userId')));
-   console.log(todo)
+   const todo = await createTodo(session.get('userId') as string);
    return redirect(`/todo/${new Date(todo.createdAt).getFullYear()}/${todo.id}/edit`);
   }
 }
