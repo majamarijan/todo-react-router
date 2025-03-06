@@ -10,7 +10,7 @@
 - 🍀 MongoDB for database
 - 🔼 PrismaORM and PrismaClient for CRUD operations
 - 🏠 Local cached object as local database
-- 🌗 Theme applied
+- 🌗 Dark Theme (DUH!)
 - 🗃️ React Context 
 
 
