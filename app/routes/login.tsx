@@ -76,11 +76,11 @@ export default function Login({
           <p>Please sign in <br /> <span className="font-mono">[username: test, password: test]</span></p>
         </div>
         <label className="flex flex-col sm:flex-row bg-slate-800 rounded p-4 gap-2">
-          Username: <input type="text" name="username" className="text-orange-400 bg-slate-700 rounded-md px-1 font-mono" />
+          Username: <input type="text" name="username" placeholder="username" className="text-orange-400 bg-slate-700 rounded-md px-1 font-mono" />
         </label>
         <label className="flex flex-col sm:flex-row bg-slate-800 rounded p-4 gap-2">
           Password:{" "}
-          <input type="password" name="password" className="text-orange-400 bg-slate-700 rounded-md px-1 font-mono" />
+          <input type="password" name="password" placeholder="*****"  className="text-orange-400 bg-slate-700 rounded-md px-1 font-mono" />
         </label>
         <button type="submit" className="px-4 py-2 rounded text-slate-200 bg-green-700">Submit</button>
       </Form>

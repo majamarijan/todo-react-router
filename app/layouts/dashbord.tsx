@@ -7,7 +7,6 @@ import TodoList from "~/components/TodosList";
 import { getSession } from "~/sessions.server";
 import { useAuth } from "~/context/AuthProvider";
 import type { User } from "~/db";
-import { formatDate } from "~/utils/utils";
 
 type Data = {
   todos: TodoRecord[];

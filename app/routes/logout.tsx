@@ -5,6 +5,11 @@ import {
 import type { Route } from "../+types/root";
 import { Form, Link, redirect } from "react-router";
 
+export async function loader({request}: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  if(!session.has('userId')) return redirect('/');
+}
+
 export async function action({
   request,
 }: Route.ActionArgs) {

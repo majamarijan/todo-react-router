@@ -3,6 +3,7 @@ import type { Route } from './+types/home';
 import { getSession } from '~/sessions.server';
 import { useLoaderData } from 'react-router';
 import { useEffect } from 'react';
+import { getAllTodos } from '~/db';
 
 export function meta({}: Route.MetaArgs) {
 	return [
@@ -16,6 +17,7 @@ export async function loader({request}: Route.LoaderArgs) {
     request.headers.get("Cookie")
   );
   if (!session.has("userId")) {
+		await getAllTodos();
 		return {isAuthenticatedSession: false};
 	}else {
 		return {isAuthenticatedSession: true};
@@ -25,7 +27,7 @@ export async function loader({request}: Route.LoaderArgs) {
 
 export default function Home() {
 	const {isAuthenticatedSession} = useLoaderData() as {isAuthenticatedSession: boolean};
-	const {isAuthenticated, user, handleAuth} = useAuth();
+	const { user, handleAuth} = useAuth();
 	
 	useEffect(()=> {	
 		if(!isAuthenticatedSession) {
@@ -37,7 +39,9 @@ export default function Home() {
 
 	return (
 			<h1 className='text-xl sm:text-2xl md:text-3xl max-w-prose text-center'> 
-				{isAuthenticatedSession ? 'Search Todos' : 'Welcome! Please, login to continue.'}
+				{isAuthenticatedSession ? 'Search Todos' : <p>
+						Welcome, <br /> please login to continue.
+					</p>}
 			</h1>
 	);
 }
